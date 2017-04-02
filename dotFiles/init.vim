@@ -1,9 +1,16 @@
-syntax on                 " syntax coloring
+syntax on                 " syntax coloring
 colorscheme apprentice
 set background=dark
 "''''''''''''''''''
 " SETS
 " '''''''''''''''''
+
+"boost your vim
+set timeoutlen=1000
+set lazyredraw
+set ttyfast
+
+set ttimeoutlen=0
 set autoindent
 set dictionary=dict
 set showmatch
@@ -11,7 +18,6 @@ set matchtime=10
 set relativenumber
 set nu
 set hidden
-set statusline=[%n]\ %<%F\ \ \ [%M%R%H%W%Y][%{&ff}]\ \ %=\ line:%l/%L\ col:%c\ \ \ %p%%\ \ \ @%{strftime(\"%H:%M:%S\")}
 set clipboard+=unnamedplus
 set ignorecase
 set vb
@@ -37,11 +43,10 @@ set smartindent              " automatically inserts one extra level of
 " set guifont=Hack-BoldItalic\ for\ Powerline
 
 set so=5                    " scrolls the text so that there are always at
-set tags=/var/fpwork/lukaszcz/ftk4/tags
 set noswapfile
 set sessionoptions-=options
 set backspace=indent,eol,start
-set tags=/var/fpwork/lukaszcz/ftk4/tags
+set tags=/tagsC/tags
 set noswapfile
 set wildmenu
 
@@ -69,10 +74,20 @@ autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \ exe "normal! g`\"" |
+     \ endif
+" Remember info about open buffers on close
+set viminfo^=%
+
+"delete whitespaces
 function! TrimWhiteSpace()
   %s/\s\+$//e
 endfunction`
 
+autocmd BufWritePre     *.c :call TrimWhiteSpace()
+autocmd BufWritePre     *.h :call TrimWhiteSpace()
 autocmd BufWritePre     *.cpp :call TrimWhiteSpace()
 autocmd BufWritePre     *.hpp :call TrimWhiteSpace()
 autocmd BufWritePre     *.ttcn3 :call TrimWhiteSpace()
@@ -84,18 +99,12 @@ filetype plugin indent on   " automatically finds and load specific plugin
 " tab hint
 "set wildchar=<TAB> wildmenu wildmode=full
 set wildcharm=<C-Z>
+
 "  nnoremap <TAB> :b <C-Z>
 "
 " "#################################
 " KLAWISZOLOGIA
 " ######################################
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
-map      <F4> :call Switch_HPP_CPP()<CR>
-" calling function for switching cpp-hpp
-
 map     <S-Insert>      <MiddleMouse>
 map!    <S-Insert>      <MiddleMouse>
 noremap <leader>ws :w !sudo tee %
@@ -104,19 +113,19 @@ noremap <leader>f <esc>:Unite buffer file_mru  <CR>
 noremap <leader>t <esc>:Unite gtags/context<CR>
 noremap <leader>d <esc>:Unite gtags/def
 noremap <leader>r <esc>:Unite gtags/ref
-"map     q :q<CR>
 nnoremap <F2> :ta#<CR>
 nnoremap <F3> :tabe#<CR>
 inoremap <F5> <C-R>=strftime("%d/%m/%Y")<CR>
 "keys
-imap jj <Esc>
+imap jk <Esc>
 imap qq <Esc>:q<CR>
-imap qw <Esc>:qw<CR>
 map qq <Esc>:q<CR>
-map qw <Esc>:qw<CR>
 map vv <Esc>:tabe $MYVIMRC<CR>
 nnoremap <space> i<space><esc>
+" nnoremap <silent><Leader>R :%s/<c-r><c-w>//gI<c-f>$F/i
+nnoremap <silent><Leader>R :%s/\<<c-r><c-w>\>//gI<c-f>$F/i
 "Plugins
+"
 nnoremap <F7> :GundoToggle<CR>
 nnoremap <C-y> :Unite history/yank<CR>
 cnoremap %% <C-R>=fnameescape(expand('%:h')).'/'<cr>
@@ -142,6 +151,25 @@ map <Right> :tabn<CR>
 map <Left> :tabp<CR>
 map <up> :bn<CR>
 map <Down> :bp<CR>
+map <C-p> :Files ~<CR>
+map <leader>tl :Tlist<CR>
+map <leader>hh :A<cr>
+map <silent> <leader><cr> :noh<cr>
+map <leader>tm :tabmove
+map <leader>to :tabonly<cr>
+map 0 ^
+nnoremap ,; :call ToggleEndChar(';')<CR>
+
+
+vnoremap <silent> * :call VisualSelection('f', '')<CR>
+vnoremap <silent> # :call VisualSelection('b', '')<CR>
+
+"DEOPLETE CONFIGURATION
+let g:deoplete#enable_at_startup = 1
+
+"DEOPLETE CLANG OPTIONS
+let g:deoplete#sources#clang#libclang_path="/usr/lib/libclang.so"
+let g:deoplete#sources#clang#clang_header="/usr/include/c++/6.3.1"
 
 filetype off                  " required
 " set the runtime path to include Vundle and initialize
@@ -156,10 +184,10 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'Shougo/neomru.vim'
 Plug 'jiangmiao/auto-pairs'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'flazz/vim-colorschemes'
 Plug 'wincent/command-t'
 Plug 'Shougo/unite.vim'
-Plug 'kien/ctrlp.vim'
 Plug 'hewes/unite-gtags'
 Plug 'Shougo/neoyank.vim'
 Plug 'junegunn/vim-easy-align'
@@ -169,22 +197,24 @@ Plug 'w0rp/ale'
 Plug 'itchyny/lightline.vim'
 Plug 'bling/vim-bufferline'
 Plug 'tpope/vim-fugitive'
+Plug 'zchee/deoplete-clang'
+Plug  'Shougo/neoinclude.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'vim-scripts/taglist.vim'
+Plug 'edkolev/tmuxline.vim'
+Plug 'vim-scripts/Conque-GDB'
+Plug 'christoomey/vim-tmux-navigator'
 call plug#end()            " required
 filetype plugin indent on    " required
 
 "let &path.="src/include,/usr/include/AL,/var/fpwork/lukaszcz/trunk/C_Test/**,/var/fpwork/lukaszcz/trunk/C_Application/C_Application/SC_MAC_PS_WMP/**,/var/fpwork/lukaszcz/trunk/lteDo/**,,"
 set makeprg=make\ -C\ ../build\ -j9
-
-let &path.="/usr/bin/xclip"
+let &path.="/usr/bin/xclip,/usr/include/c++/6.3.1"
 " set runtimepath+=/.vim/bundle/vim-snippets/snippets/cpp.snippets
-let g:lightline                  = {'left': [['buffers']], 'right': [['close']]}
-let g:lightline.tabline          = {}
-let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-let g:lightline.component_type   = {'buffers': 'tabsel'}
 
-let g:bufferline_active_buffer_left = ''
-let g:bufferline_active_buffer_right = ''
-
+"C-h woks now !
+nnoremap <silent> <BS> :TmuxNavigateLeft<cr>
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
@@ -193,14 +223,13 @@ let g:UltiSnipsEditSplit="vertical"
 let g:netrw_liststyle = 3
 let g:rainbow_active = 1
 
+
+let g:tmux_navigator_save_on_switch = 2 "tmux save on switch
 " set rtp+=/home/reed/.local/lib/python3.6/site-packages/powerline/bindings/vim
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python'
+
 let g:gundo_close_on_revert = 1
-let g:ctrlp_max_files=0
-let g:ctrlp_match_window = 'results:100'
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
 
 set statusline+=%#warningmsg#
 set statusline+=%*
@@ -209,11 +238,6 @@ set statusline+=%*
 let g:cpp_concepts_highlight = 1
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
-
-if has('persistent_undo')      "check if your vim version supports it
-  set undofile                 "turn on the feature
-  set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
-  endif
 
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
@@ -237,7 +261,10 @@ endif
 if has("autocmd")
   autocmd bufwritepost .vimrc source $MYVIMRC
 endif
-
+"add semicilon on end of line
+function! ToggleEndChar(charToMatch)
+    s/\v(.)$/\=submatch(1)==a:charToMatch ? '' : submatch(1).a:charToMatch
+endfunction
 " extract method
 function! ExtractMethod() range
   let name = inputdialog("Name of new method:")
@@ -253,13 +280,19 @@ function! ExtractMethod() range
   normal! j0w
 endfunction
 
+let g:fzf_history_dir = '~/.local/share/fzf-history'
 
 
+"lightline config
+let g:lightline                  = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.tabline          = {}
+let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+let g:lightline.component_type   = {'buffers': 'tabsel'}
 
 let g:lightline = {
       \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['bufferline'] ],
-      \   'right': [['percent', 'lineinfo']]
+      \   'left': [ [  'mode', 'paste' ], [ 'fugitive', 'filename' ]],
+      \   'right': [['percent', 'lineinfo'],]
       \ },
       \ 'component_function': {
       \   'fugitive': 'LightlineFugitive',
@@ -268,18 +301,33 @@ let g:lightline = {
       \   'filename': 'LightlineFilename'
       \ },
       \ 'component': {
-      \   'lineinfo': ' %3l:%-2v',
-      \   'bufferline': '%{bufferline#refresh_status()} %{g:bufferline_status_info.before . g:bufferline_status_info.current . g:bufferline_status_info.after}'
+      \   'lineinfo': ' %3l:%-2v' 
       \},
       \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
+      \ 'subseparator': { 'left': '', 'right': '' },
+      \ 'tabline': {
+      \ 'left': [ [ 'tabs' ] ]
+      \},
+      \ 'mode_map':{
+      \ 'n' :     '  NORMAL',
+      \ 'i' :     '  INSERT',
+      \ 'R' :     ' REPLACE',
+      \ 'v' :     ' VISUAL',
+      \ 'V' :     ' V-LINE',
+      \ "\<C-v>": ' V-BLOCK',
+      \ 'c' :     ' COMMAND',
+      \ 's' :     ' SELECT',
+      \ 'S' :     ' S-LINE',
+      \ "\<C-s>": ' S-BLOCK',
+      \ 't': ' TERMINAL',
+      \},
       \ }
-
+" \   'bufferline': '%{bufferline#refresh_status()} %{g:bufferline_status_info.before . g:bufferline_status_info.current . g:bufferline_status_info.after}'
 function! LightlineModified()
   if &filetype == "help"
     return ""
   elseif &modified
-    return "+"
+    return ""
   elseif &modifiable
     return ""
   else
@@ -303,3 +351,24 @@ endfunction
     endif
     return ''
   endfunction
+
+function! VisualSelection(direction, extra_filter) range
+    let l:saved_reg = @"
+    execute "normal! vgvy"
+
+    let l:pattern = escape(@", '\\/.*$^~[]')
+    let l:pattern = substitute(l:pattern, "\n$", "", "")
+
+    if a:direction == 'b'
+        execute "normal ?" . l:pattern . "^M"
+    elseif a:direction == 'gv'
+        call CmdLine("vimgrep " . '/'. l:pattern . '/' . ' **/*.' . a:extra_filter)
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    elseif a:direction == 'f'
+        execute "normal /" . l:pattern . "^M"
+    endif
+
+    let @/ = l:pattern
+    let @" = l:saved_reg
+endfunction
