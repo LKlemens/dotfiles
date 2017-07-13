@@ -52,6 +52,13 @@ set ai "auto indent"
 set si "smart indent"
 set viminfo^=%
 
+set tabpagemax=100 " Change maximum number of tabs
+" Open new split panes to the right and bottom, instead of left and top
+set splitbelow
+set splitright
+
+
+
 if has('persistent_undo')      "check if your vim version supports it
   set undofile                 "turn on the feature
   set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
@@ -75,6 +82,9 @@ autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
+autocmd BufWinEnter __Mundo__ call clearmatches()
+autocmd BufWinEnter __Tagbar__ call EasyMode()
+autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
 
 "remember the line I was on when I reopen a file
 autocmd BufReadPost *
@@ -177,6 +187,18 @@ nnoremap gk k
 nnoremap j gj
 nnoremap gj j
 
+
+" [w ]w - Forward and backwards tabs
+nnoremap <silent> [w <esc>:tabmove -1<cr>
+nnoremap <silent> ]w <esc>:tabmove +1<cr>
+
+" ,[HJKL] - Move split
+nnoremap <leader>H <C-W>H
+nnoremap <leader>J <C-W>J
+nnoremap <leader>K <C-W>K
+nnoremap <leader>L <C-W>L
+
+
 " ========================================================================================
 " set middle of screen for new searches
 nnoremap <silent>n nzz
@@ -197,7 +219,7 @@ nnoremap L $
 nnoremap <Left> :cp<CR>
 nnoremap <Right> :cn<CR>
 "change dir to current buffer dir
-nnoremap <leader>cd :cd %:p:h<CR>
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<cr>
 "change dir with fzf
 nnoremap <leader>gd :Cd /var/fpwork/$USER/trunk<CR>
 "show all windows
@@ -212,7 +234,7 @@ noremap <F5> :call Svndiff("clear")<CR>
 "get date
 inoremap <F6> <C-R>=strftime("%d/%m/%Y")<CR>
 
-nnoremap <leader>gu  :GundoToggle<CR>
+nnoremap <leader>uu  :MundoToggle<CR>
 "correct indentation
 map <leader>at :%!column -t<CR>
 "copy from cursor to end line
@@ -222,8 +244,8 @@ map <leader>h :AV<cr>
 "open files fzf
 map <C-p> :Files<cr>
 map <leader>pp :call CopyPath()<CR>
-map <leader>ff :call CopyFileName()<CR>
-map <leader>tl :Tlist<CR>
+nnoremap <leader>ff :call CopyFileName()<CR>
+map <leader>tl :TagbarToggle<CR>
 "grep fzf
 map <leader>ag :Ag <c-r><c-w><cr>
 nnoremap ,; :call ToggleEndChar(';')<CR>
@@ -236,6 +258,8 @@ nnoremap g; g;zz
 iabbr /** /************************************************************************
 iabbr **/ ************************************************************************/
 iabbr //- //-----------------------------------------------------------------------
+cnoreabbrev ml MarkLoad LOGI
+cnoreabbrev ms MarkSave
 
 " path to directory where library can be found
 " let g:clang_library_path='/opt/clang/x86_64/2.8-1/lib'
@@ -246,7 +270,7 @@ call plug#begin()
 " Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-commentary'
 Plug 'luochen1990/rainbow'
-Plug 'sjl/gundo.vim' "version control in vim
+Plug 'simnalamburt/vim-mundo' "version control in vim
 Plug 'SirVer/ultisnips' "snippets
 Plug 'honza/vim-snippets'
 Plug 'jiangmiao/auto-pairs'
@@ -255,7 +279,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-surround'
 Plug 'godlygeek/tabular'
 Plug 'itchyny/lightline.vim'
-Plug 'vim-scripts/taglist.vim'
 Plug 'sk1418/HowMuch'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -296,7 +319,7 @@ Plug 'Yggdroot/indentLine' "This plugin is used for displaying thin vertical lin
 Plug 'zhaocai/GoldenView.Vim' "Always have a nice view for vim split windows
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'andreshazard/vim-logreview'
-Plug 'Shougo/neocomplete.vim'
+" Plug 'Shougo/neocomplete.vim'
 
 "unite
 Plug 'Shougo/neomru.vim' "mru plugin for unite
@@ -304,7 +327,16 @@ Plug 'Shougo/unite.vim'
 Plug 'hewes/unite-gtags'
 Plug 'Shougo/unite-outline'
 Plug 'sgur/unite-qf' " unite quickfix
+
+Plug 'tommcdo/vim-exchange' "exchange words cx
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'junegunn/vim-peekaboo' " c-r macros
 Plug 'ervandew/supertab'
+Plug 'majutsushi/tagbar'
+Plug 'osyo-manga/vim-over' " %s show how it change
+Plug 'tpope/vim-endwise' " add #endif etc at the end 
+Plug 'machakann/vim-highlightedyank'
+" Plug 'pbrisbin/vim-mkdir'
 " Plug 'maralla/completor.vim'
 " NeoBundle 'movitto/vim-vsearch'    "moze sie przydac
 call plug#end()            " required
@@ -317,8 +349,6 @@ set makeprg=make\ -C\ ../build\ -j9
 nmap s <Plug>(easymotion-overwin-f2)
 map  z/ <Plug>(easymotion-sn)
 let g:EasyMotion_smartcase = 1
-
-let Tlist_WinWidth = 50
 
 "UltiSnips
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -339,6 +369,9 @@ let g:netrw_liststyle = 3
 
 let g:rainbow_active = 1
 
+"tagbar
+let g:tagbar_width=55
+
 "golden view
 let g:goldenview__enable_default_mapping = 0
 
@@ -350,6 +383,16 @@ let g:bookmark_sign = '>>'
 let g:bookmark_annotation_sign = '##'
 let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
 let g:bookmark_highlight_lines = 1
+
+
+call unite#custom#profile('source/vim_bookmarks', 'context', {
+  \   'winheight': 13,
+  \   'direction': 'botright',
+  \   'start_insert': 0,
+  \   'keep_focus': 1,
+  \   'no_quit': 1,
+  \ })
+"end bookmarks
 
 "indent
 let g:indentLine_color_term = 239
@@ -393,14 +436,14 @@ let g:unite_source_grep_default_opts =
 " end unite
 
 nnoremap + @@
-" Neocomplete
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" " Neocomplete
+" let g:neocomplete#enable_at_startup = 1
+" " Use smartcase.
+" let g:neocomplete#enable_smart_case = 1
+" " Set minimum syntax keyword length.
+" let g:neocomplete#sources#syntax#min_keyword_length = 3
+" " <TAB>: completion.
+" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 
 " switch buffers fast
@@ -414,10 +457,10 @@ nnoremap <S-Right> :bp<cr>
 nnoremap yw yiw
 nnoremap cw ciw
 nnoremap dw diw
-"gundo
-let g:gundo_width = 60
-let g:gundo_preview_height = 40
-let g:gundo_close_on_revert = 1
+"mundo
+let g:mundo_width = 60
+let g:mundo_preview_height = 40
+let g:mundo_close_on_revert = 1
 
 "colorscheme
 let g:cpp_concepts_highlight = 1
@@ -435,6 +478,10 @@ if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
 endif
 
+
+
+"vim-over
+nnoremap <leader>ov :OverCommandLine<cr>
 
 "svndiff
 let g:svndiff_autoupdate = 1
@@ -474,6 +521,19 @@ let g:lightline = {
   \  }
   \ }
 
+
+
+"peekaboo
+let g:peekaboo_delay = 100
+
+"polyglot cpp
+let g:cpp_class_scope_highlight = 1
+let g:cpp_member_variable_highlight = 1
+let g:cpp_class_decl_highlight = 1
+let g:cpp_experimental_simple_template_highlight = 1
+let g:cpp_experimental_template_highlight = 1
+let c_no_curly_error=1
+
 function! CopyFileName()
   let @+=expand('%:t')
 endfunction
@@ -488,6 +548,10 @@ map OB <Down>
 map OD <left>
 map OC <right>
 
+"yank highlight
+map y <Plug>(highlightedyank)
+let g:highlightedyank_highlight_duration = 1200
+
 
 "bold functions scheme
 " let g:enable_bold_font = 1
@@ -499,6 +563,8 @@ let g:argwrap_line_prefix = ''
 
 "FZF
 " let g:fzf_files_options =
+"             \ '--preview "highlight -q --force -O ansi /opt/python-pygments/noarch/2.2.0.p360-1/bin/pygmentize {} || cat {}"'
+" let g:fzf_files_options =
 "    \ '--preview "(coderay {} || cat {}) 2> /dev/null | head -'.&lines.'"'
 " Files with preview
 command! -bang -nargs=? -complete=dir Files
@@ -506,19 +572,20 @@ command! -bang -nargs=? -complete=dir Files
 
 "ag with preview
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>,
+  \ call fzf#vim#ag(<q-args>, '--color-path 400 --color-line-number 400',
   \                 <bang>0 ? fzf#vim#with_preview('up:60%')
   \                         : fzf#vim#with_preview('right:50%:wrap', '?'),
   \                 <bang>0)
 
-let g:fzf_history_dir = '~/.local/share/fzf-history'
-let g:fzf_buffers_jump = 1
-let g:fzf_layout = { 'down': '~100%' }
 
 " change dir through fzf
 command! -nargs=* -complete=dir Cd call fzf#run(fzf#wrap(
   \ {'source': 'find '.(empty(<f-args>) ? '.' : <f-args>).' -type d',
   \  'sink': 'cd'}))
+
+let g:fzf_history_dir = '/home/lukaszcz/.local/share/fzf-history'
+let g:fzf_buffers_jump = 1
+let g:fzf_layout = { 'down': '~100%' }
 
 " Insert mode completion
 imap <c-x><c-k> <plug>(fzf-complete-word)
@@ -608,5 +675,44 @@ endfunction
   "highlight origin line
 "   let @/ = getline('.')
 " endfunction
+
+
+
+function! s:update_fzf_colors()
+  let rules =
+  \ { 'fg':      [['Normal',       'fg']],
+    \ 'bg':      [['Normal',       'bg']],
+    \ 'hl':      [['Comment',      'fg']],
+    \ 'fg+':     [['CursorColumn', 'fg'], ['Normal', 'fg']],
+    \ 'bg+':     [['CursorColumn', 'bg']],
+    \ 'hl+':     [['Statement',    'fg']],
+    \ 'info':    [['PreProc',      'fg']],
+    \ 'prompt':  [['Conditional',  'fg']],
+    \ 'pointer': [['Exception',    'fg']],
+    \ 'marker':  [['Keyword',      'fg']],
+    \ 'spinner': [['Label',        'fg']],
+    \ 'header':  [['Comment',      'fg']] }
+  let cols = []
+  for [name, pairs] in items(rules)
+    for pair in pairs
+      let code = synIDattr(synIDtrans(hlID(pair[0])), pair[1])
+      if !empty(name) && code > 0
+        call add(cols, name.':'.code)
+        break
+      endif
+    endfor
+  endfor
+  let s:orig_fzf_default_opts = get(s:, 'orig_fzf_default_opts', $FZF_DEFAULT_OPTS)
+  let $FZF_DEFAULT_OPTS = s:orig_fzf_default_opts .
+        \ empty(cols) ? '' : (' --color='.join(cols, ','))
+endfunction
+
+augroup _fzf
+  autocmd!
+  autocmd VimEnter,ColorScheme * call s:update_fzf_colors()
+augroup END
+
+
+
 
 set viminfo+=!  " Save and restore global variables.
