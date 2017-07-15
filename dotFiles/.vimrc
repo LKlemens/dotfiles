@@ -85,6 +85,7 @@ autocmd BufWinLeave * call clearmatches()
 autocmd BufWinEnter __Mundo__ call clearmatches()
 autocmd BufWinEnter __Tagbar__ call EasyMode()
 autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
+autocmd BufWinEnter *.vimrc silent! SignifyDisable
 
 "remember the line I was on when I reopen a file
 autocmd BufReadPost *
@@ -118,6 +119,9 @@ map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+
+nmap <c-e> 4<c-e>
+nmap <c-y> 4<c-y>
 
 "map jk to esc
 inoremap jk <Esc>
@@ -228,9 +232,8 @@ nnoremap <leader>we :Window<cr>
 nnoremap <Down> :ptprev<CR>
 nnoremap <Up> :ptnext<CR>
 
-"Svn diff, show changes in file
-noremap <F4> :call Svndiff("next")<CR>
-noremap <F5> :call Svndiff("clear")<CR>
+noremap <F4> :SignifyToggle<CR>
+noremap <F5> :SignifyToggleHighlight<CR>
 "get date
 inoremap <F6> <C-R>=strftime("%d/%m/%Y")<CR>
 
@@ -260,6 +263,7 @@ iabbr **/ **********************************************************************
 iabbr //- //-----------------------------------------------------------------------
 cnoreabbrev ml MarkLoad LOGI
 cnoreabbrev ms MarkSave
+cnoreabbrev ug Unite -no-split grep:.::
 
 " path to directory where library can be found
 " let g:clang_library_path='/opt/clang/x86_64/2.8-1/lib'
@@ -288,7 +292,7 @@ Plug 'jrosiek/vim-mark' "Highlight several words in different colors simultaneou
 Plug 'bgrohman/vim-bg-sessions'
 Plug 'junegunn/limelight.vim'
 Plug 'MattesGroeger/vim-bookmarks'
-Plug 'yuttie/comfortable-motion.vim' "smooth motion c-d c-b
+Plug 'yuttie/comfortable-motion.vim' "smooth motion c-d c-u
 Plug 'rhysd/clever-f.vim'
 Plug 'unblevable/quick-scope' " Vim plugin that highlights which characters to target for f, F and family.
 
@@ -333,9 +337,15 @@ Plug 'octol/vim-cpp-enhanced-highlight'
 Plug 'junegunn/vim-peekaboo' " c-r macros
 Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
-Plug 'osyo-manga/vim-over' " %s show how it change
+Plug 'osyo-manga/vim-over' " %s shows how it change
 Plug 'tpope/vim-endwise' " add #endif etc at the end 
 Plug 'machakann/vim-highlightedyank'
+Plug 'mhinz/vim-signify' " show svn diff
+Plug 'wellle/tmux-complete.vim'
+Plug 'vim-utils/vim-interruptless' " load file automatically 
+Plug 'chrisbra/NrrwRgn' " open narrowed window with selected code
+" Plug 'kshenoy/vim-signature' " Plugin to toggle, display and navigate marks
+" Plug 'tpope/vim-markdown'  "syntax highlighting
 " Plug 'pbrisbin/vim-mkdir'
 " Plug 'maralla/completor.vim'
 " NeoBundle 'movitto/vim-vsearch'    "moze sie przydac
@@ -347,9 +357,9 @@ set makeprg=make\ -C\ ../build\ -j9
 "Easy motion
 "maping easy search and easy motion
 nmap s <Plug>(easymotion-overwin-f2)
-map  z/ <Plug>(easymotion-sn)
+map  / <Plug>(easymotion-sn)
 let g:EasyMotion_smartcase = 1
-
+let g:EasyMotion_do_mapping = 0
 "UltiSnips
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -383,7 +393,21 @@ let g:bookmark_sign = '>>'
 let g:bookmark_annotation_sign = '##'
 let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
 let g:bookmark_highlight_lines = 1
+"end bookmarks
 
+"indent
+let g:indentLine_color_term = 239
+let g:mwDefaultHighlightingPalette = 'maximum'
+let g:mwDefaultHighlightingNum = 15
+
+"signify
+let g:signify_cursorhold_insert     = 1
+let g:signify_cursorhold_normal     = 1
+let g:signify_update_on_bufenter    = 0
+let g:signify_update_on_focusgained = 1
+
+"Unite
+let g:neoyank#limit=500
 
 call unite#custom#profile('source/vim_bookmarks', 'context', {
   \   'winheight': 13,
@@ -392,16 +416,12 @@ call unite#custom#profile('source/vim_bookmarks', 'context', {
   \   'keep_focus': 1,
   \   'no_quit': 1,
   \ })
-"end bookmarks
 
-"indent
-let g:indentLine_color_term = 239
-let g:mwDefaultHighlightingPalette = 'maximum'
-let g:mwDefaultHighlightingNum = 25
 
-"Unite
-let g:neoyank#limit=500
-
+let g:unite_source_menu_menus = {}
+let g:unite_prompt = '>>> '
+let g:unite_marked_icon = 'âś“'
+let g:unite_candidate_icon = 'â'
 
 autocmd FileType unite call s:unite_settings()
 function! s:unite_settings()
@@ -482,10 +502,6 @@ endif
 
 "vim-over
 nnoremap <leader>ov :OverCommandLine<cr>
-
-"svndiff
-let g:svndiff_autoupdate = 1
-let g:svndiff_one_sign_delete = 1
 
 filetype indent on
 
@@ -714,5 +730,10 @@ augroup END
 
 
 
+
+nnoremap <left>   <c-w>>
+nnoremap <right>  <c-w><
+nnoremap <up>     <c-w>-
+nnoremap <down>   <c-w>+
 
 set viminfo+=!  " Save and restore global variables.
