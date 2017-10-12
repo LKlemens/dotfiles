@@ -74,6 +74,10 @@ autocmd FileChangedShellPost *
 
 
 
+"set cursorline
+autocmd InsertEnter * highlight CursorLine guifg=white guibg=blue ctermfg=none cterm=bold ctermbg=darkmagenta
+autocmd InsertLeave * highlight CursorLine guifg=white guibg=darkblue cterm=bold ctermfg=None ctermbg=darkblue
+
 " autocmd BufWinEnter *.log source ~/.vim/logvim
 
 
@@ -202,7 +206,7 @@ noremap <leader>t <esc>:Unite -no-split gtags/context<CR>
 " noremap <leader>d <esc>:Unite  gtags/def<cr>
 noremap <leader>gr <esc>:Unite -no-split gtags/ref<CR>
 nnoremap <leader>y :Unite history/yank<CR>
-nnoremap <leader>uq : Unite -no-split qf<cr>
+nnoremap <leader>uq :Unite -no-split qf<cr>
 nnoremap <leader>ur :UniteResume<cr>
 nnoremap <leader>uo :Unite -no-split outline<cr>
 nnoremap <leader>gg :Unite -no-split grep:.::<c-r><c-w><cr>
@@ -411,6 +415,7 @@ Plug 'sk1418/HowMuch'
 Plug 'osyo-manga/vim-anzu'
 Plug 'jaxbot/semantic-highlight.vim'
 Plug 'tpope/vim-eunuch'
+Plug 'vheon/vim-cursormode'
 " Plug 'vim-scripts/ZoomWin'
 " Plug 'djoshea/vim-autoread'
 " Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
@@ -462,6 +467,16 @@ let g:netrw_liststyle = 3
 
 "tagbar
 let g:tagbar_width=55
+
+"cursonmode
+let cursormode_solarized_color_map = {
+      \   "nlight": "#657b83",
+      \   "ndark":  "#839496",
+      \   "i":      "#268bd2",
+      \   "v":      "#cb4b16",
+      \   "V":      "#b58900",
+      \   "\<C-V>": "#6c71c4",
+      \ }
 
 " notational fzf
 let g:nv_directories = ['~/Documents/inne', '~/Documents/praca', '~/Documents/lte' ]
@@ -516,7 +531,7 @@ let g:bookmark_highlight_lines = 1
 let g:indentLine_color_term = 239
 
 "eclim
-nnoremap  <leader>d :CSearch <c-r><c-w>
+nnoremap  <leader>d :CSearch <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
 nnoremap  <leader>sc :CSearchContext <c-r><c-w>
 nnoremap  <leader>ch :CCallHierarchy!<cr>
 " let g:SuperTabDefaultCompletionType = 'context'
