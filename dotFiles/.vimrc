@@ -1,9 +1,8 @@
 syntax on                 " syntax coloring
 colorscheme Tomorrow-Night
 set background=dark
-"''''''''''''''''''
-" SETS
-" '''''''''''''''''
+filetype plugin indent on   " automatically finds and load specific plugin
+
 " SETS {{{
 set nocompatible               " Disables Vi-compatibility
 set t_Co=256
@@ -30,8 +29,10 @@ set shiftwidth=2           " control how many columns text is indented with
 set colorcolumn=120            " Sets colored column (this one)------------------------------------------------------->
 set history=2000              " keep 50 lines of command line history
 set title                      " When on, the title of the window will be set to the value of 'titlestring'.
+"search
 set hlsearch                " highlight searched text
 set incsearch               " do incremental searching
+
 set laststatus=2            " always show status line
 set ruler                   " show the cursor position all the time
 set showcmd                 " display incomplete commands
@@ -59,91 +60,15 @@ set autoread "auto reload if file saved externally
 set lazyredraw
 set ttimeoutlen=100
 set synmaxcol=128
+set foldenable          " enable folding
+" set foldlevelstart=10   " open most folds by default
+set foldmethod=indent   " fold based on indent level
 syntax sync minlines=256
+
+
+let &path.="src/include,/usr/include/AL,/usr/include/c++/4.4.7,/home/$USER/gnuglobal/6.5.2/bin,/var/fpwork/$USER/trunk/C_Test/**,/var/fpwork/$USER/trunk/C_Application/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Application_Env/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Private/**,,"
+set makeprg=make\ -C\ ../build\ -j9
 " }}}
-
-" Autocmd {{{
-"set cursorline
-highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
-autocmd InsertEnter * highlight CursorLine guifg=white guibg=blue ctermfg=none cterm=bold ctermbg=darkmagenta
-autocmd InsertLeave * highlight CursorLine guifg=white guibg=darkblue cterm=bold ctermfg=None ctermbg=darkblue
-
-" Triger `autoread` when files changes on disk
-autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
-autocmd FileChangedShellPost *
-  \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
-
-"cpp syntax
-autocmd Syntax cpp call EnhanceCppSyntax()
-
-
-" highlight ExtraWhitespace at end of line, remove them at save buffer
-" ######################
-highlight ExtraWhitespace ctermbg=red guibg=red
-match ExtraWhitespace /\s\+$/
-autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
-autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-autocmd InsertLeave * match ExtraWhitespace /\s\+$/
-autocmd BufWinLeave * call clearmatches()
-autocmd BufWinEnter __Mundo__ call clearmatches()
-autocmd BufWinEnter __Tagbar__ call EasyMode()
-autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
-autocmd BufWinEnter *.vimrc silent! SignifyDisable
-autocmd BufWinEnter *.log HardTimeOff
-autocmd BufWinEnter *.LOG HardTimeOff
-
-
-"delete  redundant whitespaces
-function! TrimWhiteSpace()
-  %s/\s\+$//e
-endfunction`
-
-" autocmd BufWritePre     *.cpp :call TrimWhiteSpace()
-" autocmd BufWritePre     *.hpp :call TrimWhiteSpace()
-autocmd BufWritePre     *.ttcn3 :call TrimWhiteSpace()
-autocmd BufWinEnter     *.LOG :set filetype=logreview
-
-"open file form quick fix in vsplit
-autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
-
-" http://stackoverflow.com/questions/1551231/highlight-variable-under-cursor-in-vim-like-in-netbeans
-autocmd CursorMoved * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-
-"remember the line I was on when I reopen a file
-autocmd BufReadPost *
-     \ if line("'\"") > 0 && line("'\"") <= line("$") |
-     \ exe "normal! g`\"" |
-     \ endif
-
-"commentary
-autocmd FileType cpp setlocal commentstring=//\ %s
-
-"auto source vimrc
-"   autocmd bufwritepost .vimrc source $MYVIMRC
-
-" }}}
-
-"undo files
-if has('persistent_undo')      "check if your vim version supports it
-  set undofile                 "turn on the feature
-  set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
-endif
-
-
-" highlight column
-highlight ColorColumn ctermbg=darkgray
-au CursorHold * checktime
-function! EnhanceCppSyntax()
-  syn match cppFuncDef "::\~\?\zs\h\w*\ze([^)]*\()\s*\(const\)\?\)\?$"
-  hi def link cppFuncDef Special
-endfunction
-
-
-filetype plugin indent on   " automatically finds and load specific plugin
-"     or indent file for known files
-"
-
-
 " MOVEMENTS {{{
 " "#################################
 " MAPPINGS
@@ -189,6 +114,14 @@ nnoremap gj j
 " [o ]o - Forward and backwards quickfix
 nnoremap <silent> [o <esc>:cn<cr>
 nnoremap <silent> ]o <esc>:cp<cr>
+"
+" move to beginning/end of line
+nnoremap B ^
+nnoremap E $
+
+" $/^ doesn't do anything
+nnoremap $ <nop>
+nnoremap ^ <nop>
 
 " [w ]w - Forward and backwards tabs
 nnoremap <silent> [w <esc>:tabmove -1<cr>
@@ -211,14 +144,22 @@ nnoremap H ^
 "go to the end of line
 nnoremap L $
 
+
+" " stop arrow keys from typing A B C D
+" map OA <up>
+" map OB <Down>
+" map OD <left>
+" map OC <right>
+
 "quit file
 map qq <Esc>:q<CR>
 
 
-
 " }}}
-
 " OTHER MAPPPINGS {{{
+"source vimrc
+nmap <leader>so :so $MYVIMRC<cr>
+
 "open vimrc
 map vv <Esc>:tabe $MYVIMRC<CR>
 
@@ -247,108 +188,140 @@ map <leader>l  :/^\n\{3}<CR>
 map <leader><cr> :noh<CR>
 
 nnoremap Q @q
+nnoremap + @@
 
-" }}}
-
-
-
-
-
-" Last inserted text
-nnoremap g. :normal! `[v`]<cr><left>
-
-
-"tags open in vertical split
-map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
-
-
-
-
-
-
-
-
-nmap <leader>W :call TrimWhiteSpace()<cr>
-
-"source vimrc
-nmap <leader>so :so $MYVIMRC<cr>
-
-
-"change dir to current buffer dir
-nnoremap <leader>cd :cd %:p:h<CR>:pwd<cr>
-"show all windows
-nnoremap <leader>we :Window<cr>
-
-
-"get date
-inoremap <F6> <C-R>=strftime("%d/%m/%Y")<CR>
-
-nnoremap <leader>uu  :MundoToggle<CR>
-"correct indentation
-map <leader>at :%!column -t<CR>
-"copy from cursor to end line
-noremap Y y$
 "open hpp/cpp in split
 map <leader>h :AV<cr>
-map <leader>pp :call CopyPath()<CR>
-nnoremap <leader>cf :call CopyFileName()<CR>
-map <leader>tl :TagbarToggle<CR>
-nnoremap ,; :call ToggleEndChar(';')<CR>
-"toggle wrap arguments in function
-nnoremap <silent> <leader>ew :ArgWrap<CR>
-" go to place of last change
-nnoremap g; g;zz
-nnoremap <leader>lo :source ~/.vim/logvim<CR>
-nnoremap <leader>br :call BackRev()<cr>
 
 "change word to WORD XD
 inoremap <C-F> <Esc>gUiw`]a
 
-"abbreviations
+" switch buffers fast
+nnoremap <S-Left>  :bp<cr>
+nnoremap <S-Right> :bp<cr>
+
+" saves effort of going to beginning of word
+" nnoremap yw yiw
+" nnoremap cw ciw
+" nnoremap dw diw
+
+" Last inserted text
+nnoremap g. :normal! `[v`]<cr><left>
+
+"tags open in vertical split
+map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+
+"change dir to current buffer dir
+nnoremap <leader>cd :cd %:p:h<CR>:pwd<cr>
+
+"get date
+inoremap <F6> <C-R>=strftime("%d/%m/%Y")<CR>
+"correct indentation
+map <leader>at :%!column -t<CR>
+"copy from cursor to end line
+noremap Y y$
+
+" go to place of last change
+nnoremap g; g;zz
+
+" }}}
+" Autocmd {{{
+"set cursorline
+highlight LineNr term=bold cterm=NONE ctermfg=DarkGrey ctermbg=NONE gui=NONE guifg=DarkGrey guibg=NONE
+autocmd InsertEnter * highlight CursorLine guifg=white guibg=blue ctermfg=none cterm=bold ctermbg=darkmagenta
+autocmd InsertLeave * highlight CursorLine guifg=white guibg=darkblue cterm=bold ctermfg=None ctermbg=darkblue
+
+" Triger `autoread` when files changes on disk
+autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
+autocmd FileChangedShellPost *
+  \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
+
+
+" highlight ExtraWhitespace at end of line, remove them at save buffer
+" ######################
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+autocmd BufWinEnter __Mundo__ call clearmatches()
+autocmd BufWinEnter __Tagbar__ call EasyMode()
+autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
+autocmd BufWinEnter *.vimrc silent! SignifyDisable
+autocmd BufWinEnter *.log HardTimeOff
+autocmd BufWinEnter *.LOG HardTimeOff
+
+
+" Set vim to save the file on focus out.
+au FocusLost * :wa
+"==========================================================================="
+" Redraw screen every time when focus gained
+au FocusGained * :redraw!
+"==========================================================================="
+
+"delete  redundant whitespaces
+function! TrimWhiteSpace()
+  %s/\s\+$//e
+endfunction`
+nmap <leader>W :call TrimWhiteSpace()<cr>
+
+" autocmd BufWritePre     *.cpp :call TrimWhiteSpace()
+" autocmd BufWritePre     *.hpp :call TrimWhiteSpace()
+autocmd BufWritePre     *.ttcn3 :call TrimWhiteSpace()
+autocmd BufWinEnter     *.LOG :set filetype=logreview
+
+"open file form quick fix in vsplit
+autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
+
+" http://stackoverflow.com/questions/1551231/highlight-variable-under-cursor-in-vim-like-in-netbeans
+autocmd CursorMoved * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+
+"remember the line I was on when I reopen a file
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \ exe "normal! g`\"" |
+     \ endif
+
+"commentary
+autocmd FileType cpp setlocal commentstring=//\ %s
+
+"auto source vimrc
+"   autocmd bufwritepost .vimrc source $MYVIMRC
+
+" }}}
+"undo files {{{
+if has('persistent_undo')      "check if your vim version supports it
+  set undofile                 "turn on the feature
+  set undodir=$HOME/.vim/undo  "directory where the undo files will be stored
+endif
+"}}}
+" highlight column  & cpp syntax{{{
+highlight ColorColumn ctermbg=darkgray
+au CursorHold * checktime
+function! EnhanceCppSyntax()
+  syn match cppFuncDef "::\~\?\zs\h\w*\ze([^)]*\()\s*\(const\)\?\)\?$"
+  hi def link cppFuncDef Special
+endfunction
+
+"cpp syntax
+autocmd Syntax cpp call EnhanceCppSyntax()
+"}}}
+"abbreviations {{{
 iabbr /** /************************************************************************
 iabbr **/ ************************************************************************/
 iabbr //- //-----------------------------------------------------------------------
 cnoreabbrev ml MarkLoad LOGI
 cnoreabbrev mss MarkSave
 cnoreabbrev rev !/usr/bin/svn up  %:p
-
-" path to directory where library can be found
-" let g:clang_library_path='/opt/clang/x86_64/2.8-1/lib'
+" }}}
+"Plug-vim {{{
 filetype off                  " required
-"Plug-vim
 call plug#begin()
 " All of your Plugins must be added before the following line
-" Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-commentary'
-" rainbow parentheses {{{
 Plug 'kien/rainbow_parentheses.vim'
 
-"rainbow parentheses
-let g:rbpt_colorpairs = [
-    \ ['brown',       'RoyalBlue3'],
-    \ ['Darkblue',    'SeaGreen3'],
-    \ ['darkgreen',   'firebrick3'],
-    \ ['darkcyan',    'RoyalBlue3'],
-    \ ['darkred',     'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['brown',       'firebrick3'],
-    \ ['black',       'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['Darkblue',    'firebrick3'],
-    \ ['darkgreen',   'RoyalBlue3'],
-    \ ['darkcyan',    'SeaGreen3'],
-    \ ['red',         'firebrick3'],
-    \ ]
-" \ ['darkred',     'DarkOrchid3'],
-" \ ['darkgray',    'DarkOrchid3'],
-" \ ['gray',        'RoyalBlue3'],
-" }}}
-let g:rbpt_max = 16
-let g:rbpt_loadcmd_toggle = 0
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
 Plug 'simnalamburt/vim-mundo' "version control in vim
 Plug 'SirVer/ultisnips' "snippets
 Plug 'honza/vim-snippets'
@@ -358,11 +331,111 @@ Plug 'Shougo/neoyank.vim'
 Plug 'tpope/vim-surround'
 Plug 'godlygeek/tabular'
 Plug 'itchyny/lightline.vim'
-" fzf {{{
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'https://github.com/Alok/notational-fzf-vim'
+Plug 'https://github.com/Alok/notational-fzf-vim' " nice flow through notations
+Plug 'easymotion/vim-easymotion' " spped up motions in vim
 
+Plug 'takac/vim-hardtime'
+Plug 'jrosiek/vim-mark' "Highlight several words in different colors simultaneously
+Plug 'bgrohman/vim-bg-sessions'
+" Plug 'junegunn/limelight.vim'
+Plug 'MattesGroeger/vim-bookmarks'
+
+Plug 'yuttie/comfortable-motion.vim' "smooth motion c-d c-u
+Plug 'rhysd/clever-f.vim'
+Plug 'unblevable/quick-scope' " Vim plugin that highlights which characters to target for f, F and family.
+
+"colorschemes
+Plug 'dikiaap/minimalist'
+Plug 'chriskempson/tomorrow-theme'
+Plug 'flazz/vim-colorschemes'
+Plug 'kristijanhusak/vim-hybrid-material' "colorscheme
+Plug 'tyrannicaltoucan/vim-quantum' "colorscheme
+Plug 'dikiaap/minimalist' "colorscheme
+Plug 'morhetz/gruvbox' "colorscheme
+" Plug 'chriskempson/base16-vim'
+Plug 'junegunn/seoul256.vim'
+Plug 'gmoe/vim-espresso'
+
+Plug 'flyovergu/cu.vim' " convert between camelCase and underscoreCase.
+Plug 'vim-scripts/svn_line_history.vim'
+Plug 'sickill/vim-pasta' " correct indent when pasting
+
+"textobj
+Plug 'kana/vim-textobj-function'
+Plug 'glts/vim-textobj-comment'
+Plug 'kana/vim-textobj-indent'
+Plug 'kana/vim-textobj-user'
+
+Plug 'tpope/vim-repeat' " make dot better
+Plug 'wellle/targets.vim' " It expands on the idea of simple commands like di'
+Plug 'FooSoft/vim-argwrap'
+Plug 'Yggdroot/indentLine' "This plugin is used for displaying thin vertical lines at each indentation level for code indented with spaces
+Plug 'zhaocai/GoldenView.Vim' "Always have a nice view for vim split windows
+" Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'andreshazard/vim-logreview'
+" Plug 'Shougo/neocomplete.vim'
+
+Plug 'Shougo/neomru.vim' "mru plugin for unite
+Plug 'Shougo/unite.vim'
+Plug 'hewes/unite-gtags'
+Plug 'Shougo/unite-outline'
+Plug 'sgur/unite-qf' " unite quickfix
+
+
+Plug 'tommcdo/vim-exchange' "exchange words cx
+Plug 'octol/vim-cpp-enhanced-highlight'
+Plug 'junegunn/vim-peekaboo' " c-r macros
+Plug 'ervandew/supertab'
+" Plug 'majutsushi/tagbar'
+" Plug 'osyo-manga/vim-over' " %s shows how it change
+Plug 'tpope/vim-endwise' " add #endif etc at the end
+Plug 'machakann/vim-highlightedyank'
+
+Plug 'mhinz/vim-signify' " show svn diff
+" Plug 'wellle/tmux-complete.vim'
+Plug 'vim-utils/vim-interruptless' " load file automatically
+Plug 'vim-utils/vim-vertical-move' " . These move a cursor 'up' or 'down' as many lines as possible without changing the cursor column [v ]v
+Plug 'terryma/vim-multiple-cursors'
+Plug 'paul-nechifor/vim-svn-blame'
+Plug 'sk1418/HowMuch'
+Plug 'osyo-manga/vim-anzu'
+Plug 'jaxbot/semantic-highlight.vim'
+Plug 'tpope/vim-eunuch'
+Plug 'vheon/vim-cursormode' " multicursor edit
+Plug 'chrisbra/NrrwRgn' "focus on a selected region while making the rest inaccessible. NRP, NRM
+" Plug 'vim-scripts/ZoomWin'
+" Plug 'djoshea/vim-autoread'
+" Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
+" Plug 'ludovicchabant/vim-gutentags'
+" Plug 'kshenoy/vim-signature' " Plugin to toggle, display and navigate marks
+" Plug 'pbrisbin/vim-mkdir'
+" Plug 'maralla/completor.vim'
+" Plug ' rhysd/committia' " more pleasant git commit
+" NeoBundle 'movitto/vim-vsearch'    "moze sie przydac
+call plug#end()            " required
+" }}}
+"Plugins settings {{{
+"UltiSnips {{{
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+"}}}
+"arwrap {{{
+"toggle wrap arguments in function
+nnoremap <silent> <leader>ew :ArgWrap<CR>
+let g:argwrap_line_prefix = ''
+" }}}
+" bookmarks {{{
+let g:bookmark_sign = '>>'
+let g:bookmark_annotation_sign = '##'
+let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
+let g:bookmark_highlight_lines = 1
+" }}}
+"
+" fzf {{{
 
 "open files fzf
 "change dir with fzf
@@ -378,6 +451,10 @@ imap <c-x><c-f> <plug>(fzf-complete-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
+nnoremap <silent> <leader>nv :NV<CR>
+
+"show all windows
+nnoremap <leader>we :Window<cr>
 
 " fzf colors like colorscheme
 function! s:update_fzf_colors()
@@ -445,77 +522,8 @@ let g:fzf_layout = { 'down': '~100%' }
 " notational fzf
 let g:nv_directories = ['~/Documents/inne', '~/Documents/praca', '~/Documents/lte' ]
 let g:nv_use_short_pathnames = 1
-nnoremap <silent> <leader>nv :NV<CR>
 " }}}
-
-" easy motion {{{
-Plug 'easymotion/vim-easymotion'
-
-"Easy motion
-"maping easy search and easy motion
-nmap s <Plug>(easymotion-overwin-f2)
-" JK motions: Line motions
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-" map  z/ <Plug>(easymotion-sn)
-let g:EasyMotion_smartcase = 1
-let g:EasyMotion_do_mapping = 0
-" }}}
-Plug 'takac/vim-hardtime'
-Plug 'jrosiek/vim-mark' "Highlight several words in different colors simultaneously
-Plug 'bgrohman/vim-bg-sessions'
-" Plug 'junegunn/limelight.vim'
-" bookmarks {{{
-Plug 'MattesGroeger/vim-bookmarks'
-
-"bookmarks
-let g:bookmark_sign = '>>'
-let g:bookmark_annotation_sign = '##'
-let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
-let g:bookmark_highlight_lines = 1
-" }}}
-Plug 'yuttie/comfortable-motion.vim' "smooth motion c-d c-u
-Plug 'rhysd/clever-f.vim'
-Plug 'unblevable/quick-scope' " Vim plugin that highlights which characters to target for f, F and family.
-
-"colorschemes
-Plug 'dikiaap/minimalist'
-Plug 'chriskempson/tomorrow-theme'
-Plug 'flazz/vim-colorschemes'
-Plug 'kristijanhusak/vim-hybrid-material' "colorscheme
-Plug 'tyrannicaltoucan/vim-quantum' "colorscheme
-Plug 'dikiaap/minimalist' "colorscheme
-Plug 'morhetz/gruvbox' "colorscheme
-" Plug 'chriskempson/base16-vim'
-Plug 'junegunn/seoul256.vim'
-Plug 'gmoe/vim-espresso'
-
-Plug 'flyovergu/cu.vim' " convert between camelCase and underscoreCase.
-Plug 'vim-scripts/svn_line_history.vim'
-Plug 'sickill/vim-pasta' " correct indent when pasting
-
-"textobj
-Plug 'kana/vim-textobj-function'
-Plug 'glts/vim-textobj-comment'
-Plug 'kana/vim-textobj-indent'
-Plug 'kana/vim-textobj-user'
-
-Plug 'tpope/vim-repeat' " make dot better
-Plug 'wellle/targets.vim' " It expands on the idea of simple commands like di'
-Plug 'FooSoft/vim-argwrap'
-Plug 'Yggdroot/indentLine' "This plugin is used for displaying thin vertical lines at each indentation level for code indented with spaces
-Plug 'zhaocai/GoldenView.Vim' "Always have a nice view for vim split windows
-" Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-Plug 'andreshazard/vim-logreview'
-" Plug 'Shougo/neocomplete.vim'
-
-"Plug unite {{{
-Plug 'Shougo/neomru.vim' "mru plugin for unite
-Plug 'Shougo/unite.vim'
-Plug 'hewes/unite-gtags'
-Plug 'Shougo/unite-outline'
-Plug 'sgur/unite-qf' " unite quickfix
-
+" unite {{{
 "mapping
 noremap <leader>f <esc>:Unite -no-split buffer file_mru  <CR>
 noremap <leader>t <esc>:Unite -no-split gtags/context<CR>
@@ -540,6 +548,11 @@ call unite#custom#profile('source/vim_bookmarks', 'context', {
   \   'no_quit': 1,
   \ })
 
+call unite#custom#profile('default', 'context', {
+  \   'direction': 'topleft',
+  \   'vertical_preview': 1,
+  \   'winheight': 45
+  \ })
 
 let g:unite_source_menu_menus = {}
 let g:unite_prompt = '>>> '
@@ -566,11 +579,6 @@ function! s:unite_settings()
   nnoremap <ESC> :UniteClose<cr>
 endfunction
 
-call unite#custom#profile('default', 'context', {
-\   'direction': 'topleft',
-\   'vertical_preview': 1,
-\   'winheight': 45
-\ })
 
 let g:unite_source_grep_command='ag'
 let g:unite_source_grep_recursive_opt=''
@@ -579,69 +587,63 @@ let g:unite_source_grep_default_opts =
 " end unite
 
 " }}}
+"Easy Motion {{{
+"maping easy search and easy motion
+nmap s <Plug>(easymotion-overwin-f2)
+let g:EasyMotion_skipfoldedline = 0
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-bd-jk)
+map <Leader>k <Plug>(easymotion-k)
+" map  z/ <Plug>(easymotion-sn)
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_do_mapping = 0
+" }}}
+"
+"rainbow parentheses {{{
 
-Plug 'tommcdo/vim-exchange' "exchange words cx
-Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'junegunn/vim-peekaboo' " c-r macros
-Plug 'ervandew/supertab'
-" Plug 'majutsushi/tagbar'
-" Plug 'osyo-manga/vim-over' " %s shows how it change
-Plug 'tpope/vim-endwise' " add #endif etc at the end
-Plug 'machakann/vim-highlightedyank'
-
-Plug 'mhinz/vim-signify' " show svn diff
-" Plug 'wellle/tmux-complete.vim'
-Plug 'vim-utils/vim-interruptless' " load file automatically
-Plug 'vim-utils/vim-vertical-move' " . These move a cursor 'up' or 'down' as many lines as possible without changing the cursor column [v ]v
-Plug 'terryma/vim-multiple-cursors'
-Plug 'paul-nechifor/vim-svn-blame'
-Plug 'sk1418/HowMuch'
-Plug 'osyo-manga/vim-anzu'
-Plug 'jaxbot/semantic-highlight.vim'
-Plug 'tpope/vim-eunuch'
-Plug 'vheon/vim-cursormode'
-" Plug 'vim-scripts/ZoomWin'
-" Plug 'djoshea/vim-autoread'
-" Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
-" Plug 'ludovicchabant/vim-gutentags'
-" Plug 'kshenoy/vim-signature' " Plugin to toggle, display and navigate marks
-" Plug 'pbrisbin/vim-mkdir'
-" Plug 'maralla/completor.vim'
-" Plug ' rhysd/committia' " more pleasant git commit
-" NeoBundle 'movitto/vim-vsearch'    "moze sie przydac
-call plug#end()            " required
-
-let &path.="src/include,/usr/include/AL,/usr/include/c++/4.4.7,/home/$USER/gnuglobal/6.5.2/bin,/var/fpwork/$USER/trunk/C_Test/**,/var/fpwork/$USER/trunk/C_Application/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Application_Env/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Private/**,,"
-set makeprg=make\ -C\ ../build\ -j9
-
-"UltiSnips
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsEditSplit="vertical"
-
-
-"anzu
+let g:rbpt_colorpairs = [
+    \ ['brown',       'RoyalBlue3'],
+    \ ['Darkblue',    'SeaGreen3'],
+    \ ['darkgreen',   'firebrick3'],
+    \ ['darkcyan',    'RoyalBlue3'],
+    \ ['darkred',     'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['brown',       'firebrick3'],
+    \ ['black',       'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['Darkblue',    'firebrick3'],
+    \ ['darkgreen',   'RoyalBlue3'],
+    \ ['darkcyan',    'SeaGreen3'],
+    \ ['red',         'firebrick3'],
+    \ ]
+" \ ['darkred',     'DarkOrchid3'],
+" \ ['darkgray',    'DarkOrchid3'],
+" \ ['gray',        'RoyalBlue3'],
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
+" }}}
+"anzu , nN search {{{
 " ========================================================================================
 " set middle of screen for new searches
 nmap n :call HLNext()<cr><Plug>(anzu-n-with-echo)zz
 nmap N :call HLNext()<cr><Plug>(anzu-N-with-echo)zz
 " statusline
 set statusline+=%{anzu#search_status()}
-
-"netrw
+" }}}
+"netrw {{{
 let g:netrw_sort_by='time'
 let g:netrw_sort_direction='reverse'
 let g:netrw_liststyle = 3
-
-"gutentag
-" let g:gutentags_file_list_command = "find /var/fpwork/$USER/trunk -name '*.cpp' -o -name '*.hpp' -o -name '*.h' -o -name '*.c'"
-" let g:gutentags_cache_dir='/var/fpwork/$USER/universalTags'
-
-"tagbar
-let g:tagbar_width=55
-
-"cursonmode
+"}}}
+"tagbar {{{
+" map <leader>tl :TagbarToggle<CR>
+" let g:tagbar_width=55
+"}}}
+"cursonmode{{{
 let cursormode_solarized_color_map = {
       \   "nlight": "#657b83",
       \   "ndark":  "#839496",
@@ -650,96 +652,55 @@ let cursormode_solarized_color_map = {
       \   "V":      "#b58900",
       \   "\<C-V>": "#6c71c4",
       \ }
-
-
-"golden view
-let g:goldenview__enable_default_mapping = 0
-
-
-
-"hardtime
+"}}}
+"yank highlight {{{
+map y <Plug>(highlightedyank)
+let g:highlightedyank_highlight_duration = 1200
+"}}}
+"
+"hardtime {{{
+let g:hardtime_ignore_buffer_patterns = [".vimrc"]
 let g:hardtime_default_on = 1
 let g:hardtime_ignore_quickfix = 1
-
-
-"indent
-let g:indentLine_color_term = 239
-
-"eclim
+"}}}
+"eclim {{{
 nnoremap  <leader>d :CSearch <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
 nnoremap  <leader>sc :CSearchContext <c-r><c-w>
 nnoremap  <leader>ch :CCallHierarchy!<cr>
 " let g:SuperTabDefaultCompletionType = 'context'
 let g:EclimCSearchSingleResult='split'
-" let g:EclimCppValidate = 0
-
-"mark colors
-let g:mwDefaultHighlightingPalette = 'maximum'
-let g:mwDefaultHighlightingNum = 15
-
-"how much
+let g:EclimCppValidate = 0
+"}}}
+"how much {{{
 "The scale of the result:
 let g:HowMuch_scale = 2
 "the engine order for auto-calculation
 let g:HowMuch_auto_engines = ['bc', 'vim', 'py']
-
-
-"signify
+"}}}
+"signify {{{
 let g:signify_cursorhold_insert     = 1
 let g:signify_cursorhold_normal     = 1
 let g:signify_update_on_bufenter    = 0
 let g:signify_update_on_focusgained = 1
 
-nnoremap + @@
-" " Neocomplete
-" let g:neocomplete#enable_at_startup = 1
-" " Use smartcase.
-" let g:neocomplete#enable_smart_case = 1
-" " Set minimum syntax keyword length.
-" let g:neocomplete#sources#syntax#min_keyword_length = 3
-" " <TAB>: completion.
-" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-
-
-" switch buffers fast
-nnoremap <S-Left>  :bp<cr>
-nnoremap <S-Right> :bp<cr>
-
-" signify
 nnoremap <leader>st :SignifyToggle<CR>
 nnoremap <leader>sth :SignifyToggleHighlight<CR>
+"}}}
+"mundo {{{
+nnoremap <leader>uu  :MundoToggle<CR>
 
-
-" saves effort of going to beginning of word
-" nnoremap yw yiw
-" nnoremap cw ciw
-" nnoremap dw diw
-"mundo
 let g:mundo_width = 60
 let g:mundo_preview_height = 40
 let g:mundo_close_on_revert = 1
-
-"colorscheme cpp highlight
+" }}}
+"colorscheme cpp highlight {{{
 let g:cpp_concepts_highlight = 1
 let g:cpp_class_decl_highlight = 1
 let g:cpp_experimental_template_highlight = 1
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
-
-"Disable scrollbars (real hackers don't use scrollbars for navigation!)
-set guioptions-=r
-set guioptions-=R
-set guioptions-=l
-set guioptions-=L
-
-
-if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
-endif
-
-
-
-"tabularize
+"}}}
+"tabularize {{{
 " if exists(":Tabularize")
   nmap <Leader>a= :Tabularize /=<CR>
   vmap <Leader>a= :Tabularize /=<CR>
@@ -748,34 +709,48 @@ endif
   vmap <Leader>a, :Tabularize /,<CR>
   nmap <Leader>a, :Tabularize /,<CR>
 " endif
-
-
-"add semicolon on the end
+"}}}
+"
+"add semicolon on the end function {{{
+nnoremap ,; :call ToggleEndChar(';')<CR>
 function! ToggleEndChar(charToMatch)
     s/\v(.)$/\=submatch(1)==a:charToMatch ? '' : submatch(1).a:charToMatch
 endfunction
-
-"lightline
+"}}}
+"lightline {{{
 let g:lightline = {
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ], [ 'filename' ], [ 'bufferline' ] ],
   \  }
   \ }
-
-
-
-"peekaboo
+"}}}
+"golden view {{{
+let g:goldenview__enable_default_mapping = 0
+"}}}
+"semantic colors {{{
+" nnoremap <Leader>sc :SemanticHighlightToggle<cr>
+"}}}
+"peekaboo {{{
 let g:peekaboo_delay = 600
-
-
-"polyglot cpp
-let g:cpp_class_scope_highlight = 1
-let g:cpp_member_variable_highlight = 1
-let g:cpp_class_decl_highlight = 1
-let g:cpp_experimental_simple_template_highlight = 1
-let g:cpp_experimental_template_highlight = 1
-let c_no_curly_error=1
-
+"}}}
+"indent {{{
+let g:indentLine_color_term = 239
+"}}}
+"mark colors {{{
+let g:mwDefaultHighlightingPalette = 'maximum'
+let g:mwDefaultHighlightingNum = 15
+"}}}
+"
+"DiffOrig {{{
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
+endif
+"}}}
+"}}}
+"
+"copy path/file name {{{
+map <leader>pp :call CopyPath()<CR>
+nnoremap <leader>cf :call CopyFileName()<CR>
 function! CopyFileName()
   let @+=expand('%:t')
 endfunction
@@ -783,82 +758,32 @@ endfunction
 function! CopyPath()
   let @+=expand('%:p')
 endfunction
-
-" stop arrow keys from typing A B C D
-map OA <up>
-map OB <Down>
-map OD <left>
-map OC <right>
-
-"yank highlight
-map y <Plug>(highlightedyank)
-let g:highlightedyank_highlight_duration = 1200
-
-
-"bold functions scheme
-" let g:enable_bold_font = 1
-
-"arwrap
-let g:argwrap_line_prefix = ''
-
-
-
-"semantic colors
-" nnoremap <Leader>sc :SemanticHighlightToggle<cr>
-
-" Set vim to save the file on focus out.
-au FocusLost * :wa
-"==========================================================================="
-" Redraw screen every time when focus gained
-au FocusGained * :redraw!
-"==========================================================================="
-
-
-
-
-
-
-
-" nnoremap <left>   <c-w>>
-" nnoremap <right>  <c-w><
-" nnoremap <up>     <c-w>-
-" nnoremap <down>   <c-w>+
-
-
-
-
-function! DataMining()
-  while line('.') !~ line('$')
-    let w=expand("<cword>")
-    echom "word" . w
-    let a=system("ag -wc ". w . "expand('%h')")
-    echom " num  " . a
-    let a-=1
-    let i=0
-    while i<a
-      normal *ddNpdwN
-      " echom "first while " . i
-      let i+=1
-    endwhile
-
-    echom "next"
-    normal! n
-    while 0<i
-      normal! J
-      " echom "second while " . i
-      let i-=1
-    endwhile
-
-    normal! j0
-  endwhile
-endfunction
-
+"}}}
+"go thorugh revisions in svn {{{
+nnoremap <leader>br :call BackRev()<cr>
 function! BackRev()
   normal x
   let prevRev=expand("<cword>")
   let prevRev-=1
   normal :q
   silent execute  "!" . "/usr/bin/svn up -r " . prevRev . "  " . expand('%:p')
+  execute 'redraw!'
+endfunction
+
+
+function! Summarize()
+  let rev=expand("<cword>")
+  silent execute  "!" . "/usr/bin/svn diff --summarize -c " . rev . " > diff"
+  redir => message
+  silent execute "!" . "ag C_Application/ diff"
+  redir END
+  execute "!" . "echo   hehehehe " . message
+  if empty(message)
+    normal! A ------> i am ctest
+  else
+    normal! A ------> i am applicaiton
+  endif
+  normal n
   execute 'redraw!'
 endfunction
 
@@ -876,83 +801,4 @@ function! CurrRev()
   execute 'redraw!'
   " echom g:currRev
 endfunction
-
-
-
-
-"function! CorrectCppMacrosInCtagFile()
-"   normal! gg
-"   while search('^SUBSEQUENCE	\|SUBDATA	\/var\/fpwork', "W")
-"     if getline('.') !~ 'define'
-"       normal! 0diWf(wyi(0PF,dwi_
-"     endif
-"   endwhile
-"   normal! gg
-"   set noignorecase
-"   while search('^TC_VARIATION	\|^SEQUENCE	\/var\/fpwork\|^INHERIT_TESTCASE	\|^CA_TESTCASE	\|^INHERIT_CHECK
-"             \\|^INHERIT_SEQUENCE	\|^TESTCASE	\|^MESSAGES	\/var\/fpwork\|^MESSAGE	\/var\/fpwork\|^AAEU_PROCESS
-"             \\|^CHECK	\|^TC_MAIN	\|^CHANNEL	\|^THREAD	\/var\/fpwork\|::SEQUENCE	\/var\/fpwork
-"             \\|::MESSAGE	\/var\/fpwork\|::MESSAGES	\/var\/fpwork\|::THREAD	\/var\/fpwork', "W")
-"     if getline('.') !~ 'define'
-"       normal! 0diWf(wye0P
-"     endif
-"   endwhile
-"   normal! gg
-"   while search('^SendMsg	\|^RecvMsg	', "W")
-"     normal! 0diwf^wwye0P
-"   endwhile
-"   normal! gg
-"   while search('^TEST	\|^TEST_F	\|^TEST_P	', "W")
-"     if getline('.') !~ '#define\|# define'
-"       normal! 0diwf(wwwye0P
-"     endif
-"   endwhile
-"   set ignorecase
-" endfunction
-"
-"
-"
-"
-"function! ExpandCMacro()
-"   "get current info
-"   let l:macro_file_name = "__macroexpand__" . tabpagenr()
-"   let l:file_row = line(".")
-"   let l:file_name = expand("%")
-"   let l:file_window = winnr()
-"   "create mark
-"   execute "normal! Oint " . l:macro_file_name . ";"
-"   execute "w"
-"   "open tiny window ... check if we have already an open buffer for macro
-"   if bufwinnr( l:macro_file_name ) != -1
-"     execute bufwinnr( l:macro_file_name) . "wincmd w"
-"     setlocal modifiable
-"     execute "normal! ggdG"
-"   else
-"     execute "bot 10split " . l:macro_file_name
-"     execute "setlocal filetype=cpp"
-"     execute "setlocal buftype=nofile"
-"     nnoremap <buffer> q :q!<CR>
-"   endif
-"   "read file with gcc
-"   silent! execute "r!gcc -E " . l:file_name
-"   "keep specific macro line
-"   execute "normal! ggV/int " . l:macro_file_name . ";$\<CR>d"
-"   execute "normal! jdG"
-"   "indent
-"   execute "%!indent -st -kr"
-"   execute "normal! gg=G"
-"   "resize window
-"   execute "normal! G"
-"   let l:macro_end_row = line(".")
-"   execute "resize " . l:macro_end_row
-"   execute "normal! gg"
-"   "no modifiable
-"   setlocal nomodifiable
-"   "return to origin place
-"   execute l:file_window . "wincmd w"
-"   execute l:file_row
-"   execute "normal!u"
-"   execute "w"
-  "highlight origin line
-"   let @/ = getline('.')
-" endfunction
+" }}}
