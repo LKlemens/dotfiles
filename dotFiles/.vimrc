@@ -711,12 +711,6 @@ let g:cpp_member_variable_highlight = 1
 " endif
 "}}}
 "
-"add semicolon on the end function {{{
-nnoremap ,; :call ToggleEndChar(';')<CR>
-function! ToggleEndChar(charToMatch)
-    s/\v(.)$/\=submatch(1)==a:charToMatch ? '' : submatch(1).a:charToMatch
-endfunction
-"}}}
 "lightline {{{
 let g:lightline = {
   \ 'active': {
@@ -740,14 +734,19 @@ let g:indentLine_color_term = 239
 let g:mwDefaultHighlightingPalette = 'maximum'
 let g:mwDefaultHighlightingNum = 15
 "}}}
-"
+"}}}
+"my functions {{{
+"add semicolon on the end function {{{
+nnoremap ,; :call ToggleEndChar(';')<CR>
+function! ToggleEndChar(charToMatch)
+    s/\v(.)$/\=submatch(1)==a:charToMatch ? '' : submatch(1).a:charToMatch
+endfunction
+"}}}
 "DiffOrig {{{
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis
 endif
 "}}}
-"}}}
-"
 "copy path/file name {{{
 map <leader>pp :call CopyPath()<CR>
 nnoremap <leader>cf :call CopyFileName()<CR>
@@ -801,4 +800,5 @@ function! CurrRev()
   execute 'redraw!'
   " echom g:currRev
 endfunction
+" }}}
 " }}}
