@@ -32,6 +32,8 @@ set title                      " When on, the title of the window will be set to
 "search
 set hlsearch                " highlight searched text
 set incsearch               " do incremental searching
+set ignorecase                 " The case of normal letters is ignored.
+set smartcase                  " Override the 'ignorecase' option if the search pattern contains upper case characters.
 
 set laststatus=2            " always show status line
 set ruler                   " show the cursor position all the time
@@ -49,8 +51,6 @@ set wildmode=longest,list,full " Completion mode that is used for the character 
 set smarttab                   " A <Tab> in front of a line inserts blanks according to 'shiftwidth'.
 set viminfo^=%                 " Save and restore the buffer list.
 set viminfo+=!  " Save and restore global variables.
-set ignorecase                 " The case of normal letters is ignored.
-set smartcase                  " Override the 'ignorecase' option if the search pattern contains upper case characters.
 set tabpagemax=100 " Change maximum number of tabs
 
 set splitbelow                 " Open new split panes to bottom, instead top
@@ -152,7 +152,7 @@ nnoremap L $
 " map OC <right>
 
 "quit file
-map qq <Esc>:q<CR>
+" map qq <Esc>:q<CR>
 
 
 " }}}
@@ -190,6 +190,8 @@ map <leader><cr> :noh<CR>
 nnoremap Q @q
 nnoremap + @@
 
+"open new tab
+nnoremap <leader>t :tabnew<cr>
 "open hpp/cpp in split
 map <leader>h :AV<cr>
 
@@ -209,7 +211,18 @@ nnoremap <S-Right> :bp<cr>
 nnoremap g. :normal! `[v`]<cr><left>
 
 "tags open in vertical split
-map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+map <C-\> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>zz
+map <C-]> <C-]>zz
+
+" nnoremap <silent> * *zz
+" nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
+nnoremap <silent> g# g#zz
+nnoremap <silent> <C-o> <C-o>zz
+nnoremap <silent> <C-i> <C-i>zz
+
+vnoremap < <gv
+vnoremap > >gv
 
 "change dir to current buffer dir
 nnoremap <leader>cd :cd %:p:h<CR>:pwd<cr>
@@ -417,23 +430,6 @@ Plug 'chrisbra/NrrwRgn' "focus on a selected region while making the rest inacce
 call plug#end()            " required
 " }}}
 "Plugins settings {{{
-"UltiSnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UltiSnipsEditSplit="vertical"
-"}}}
-"arwrap {{{
-"toggle wrap arguments in function
-nnoremap <silent> <leader>ew :ArgWrap<CR>
-let g:argwrap_line_prefix = ''
-" }}}
-" bookmarks {{{
-let g:bookmark_sign = '>>'
-let g:bookmark_annotation_sign = '##'
-let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
-let g:bookmark_highlight_lines = 1
-" }}}
 "
 " fzf {{{
 
@@ -526,7 +522,7 @@ let g:nv_use_short_pathnames = 1
 " unite {{{
 "mapping
 noremap <leader>f <esc>:Unite -no-split buffer file_mru  <CR>
-noremap <leader>t <esc>:Unite -no-split gtags/context<CR>
+" noremap <leader>t <esc>:Unite -no-split gtags/context<CR>
 " noremap <leader>d <esc>:Unite  gtags/def<cr>
 noremap <leader>gr <esc>:Unite -no-split gtags/ref<CR>
 nnoremap <leader>y :Unite history/yank<CR>
@@ -599,6 +595,24 @@ let g:EasyMotion_smartcase = 1
 let g:EasyMotion_do_mapping = 0
 " }}}
 "
+"UltiSnips {{{
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsEditSplit="vertical"
+"}}}
+"arwrap {{{
+"toggle wrap arguments in function
+nnoremap <silent> <leader>ew :ArgWrap<CR>
+let g:argwrap_line_prefix = ''
+" }}}
+" bookmarks {{{
+let g:bookmark_sign = '>>'
+let g:bookmark_annotation_sign = '##'
+let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
+let g:bookmark_highlight_lines = 1
+" }}}
+"
 "rainbow parentheses {{{
 
 let g:rbpt_colorpairs = [
@@ -662,14 +676,6 @@ let g:highlightedyank_highlight_duration = 1200
 let g:hardtime_ignore_buffer_patterns = [".vimrc"]
 let g:hardtime_default_on = 1
 let g:hardtime_ignore_quickfix = 1
-"}}}
-"eclim {{{
-nnoremap  <leader>d :CSearch <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
-nnoremap  <leader>sc :CSearchContext <c-r><c-w>
-nnoremap  <leader>ch :CCallHierarchy!<cr>
-" let g:SuperTabDefaultCompletionType = 'context'
-let g:EclimCSearchSingleResult='split'
-let g:EclimCppValidate = 0
 "}}}
 "how much {{{
 "The scale of the result:
@@ -735,6 +741,14 @@ let g:mwDefaultHighlightingPalette = 'maximum'
 let g:mwDefaultHighlightingNum = 15
 "}}}
 "}}}
+"eclim {{{
+nnoremap  <leader>d :CSearch <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
+nnoremap  <leader>sc :CSearchContext <c-r><c-w>
+nnoremap  <leader>ch :CCallHierarchy!<cr>
+" let g:SuperTabDefaultCompletionType = 'context'
+let g:EclimCSearchSingleResult='split'
+let g:EclimCppValidate = 0
+"}}}
 "my functions {{{
 "add semicolon on the end function {{{
 nnoremap ,; :call ToggleEndChar(';')<CR>
@@ -758,7 +772,7 @@ function! CopyPath()
   let @+=expand('%:p')
 endfunction
 "}}}
-"go thorugh revisions in svn {{{
+"go through revisions in svn {{{
 nnoremap <leader>br :call BackRev()<cr>
 function! BackRev()
   normal x
@@ -776,7 +790,7 @@ function! Summarize()
   redir => message
   silent execute "!" . "ag C_Application/ diff"
   redir END
-  execute "!" . "echo   hehehehe " . message
+execute "!" . "echo   message " . message
   if empty(message)
     normal! A ------> i am ctest
   else
