@@ -66,7 +66,7 @@ set foldmethod=indent   " fold based on indent level
 syntax sync minlines=256
 
 
-let &path.="src/include,/usr/include/AL,/usr/include/c++/4.4.7,/home/$USER/gnuglobal/6.5.2/bin,/var/fpwork/$USER/trunk/C_Test/**,/var/fpwork/$USER/trunk/C_Application/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Application_Env/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Private/**,,"
+let &path.="src/include,/usr/include/AL,/usr/include/c++/4.4.7,/$HOME/gnuglobal/6.5.2/bin,/var/fpwork/$USER/trunk/C_Test/**,/var/fpwork/$USER/trunk/C_Application/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Application_Env/**,/var/fpwork/$USER/trunk/lteDo/I_Interface/Private/**,,"
 set makeprg=make\ -C\ ../build\ -j9
 " }}}
 " MOVEMENTS {{{
@@ -92,6 +92,7 @@ let mapleader=','
 inoremap <C-Q>     <esc>:q<cr>
 nnoremap <C-Q>     :q<cr>
 vnoremap <C-Q>     <esc>
+nnoremap qq :q<cr>
 
 nnoremap 0 ^
 nnoremap ^ 0
@@ -509,7 +510,7 @@ command! -nargs=* -complete=dir Cd call fzf#run(fzf#wrap(
   \ {'source': 'find '.(empty(<f-args>) ? '.' : <f-args>).' -type d',
   \  'sink': 'cd'}))
 
-let g:fzf_history_dir = '/home/$USER/.local/share/fzf-history'
+let g:fzf_history_dir = '$HOME/.local/share/fzf-history'
 let g:fzf_buffers_jump = 1
 let g:fzf_layout = { 'down': '~100%' }
 
@@ -775,14 +776,25 @@ endfunction
 "go through revisions in svn {{{
 nnoremap <leader>br :call BackRev()<cr>
 function! BackRev()
-  normal x
   let prevRev=expand("<cword>")
   let prevRev-=1
-  normal :q
+  if 'cpp' !~ expand('%:e') && 'hpp' !~ expand('%:e')
+    silent execute "q"
+  endif
+  silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "$HOME/backupFun/" . expand('%:t:r') . ".diff"
+  silent execute "!" . "/usr/bin/svn revert " . expand('%:p')
   silent execute  "!" . "/usr/bin/svn up -r " . prevRev . "  " . expand('%:p')
   execute 'redraw!'
 endfunction
 
+
+function! ShowDiff()
+  let rev=expand("<cword>")
+  silent execute "!" "/usr/bin/svn log -r " . rev . " > temp.diff"
+  silent execute "!". "/usr/bin/svn diff -c " . rev . " >> temp.diff"
+  normal! :vs temp.diff
+  execute 'redraw!'
+endfunction
 
 function! Summarize()
   let rev=expand("<cword>")
@@ -806,13 +818,10 @@ function! CurrRev()
   let @p=expand('%:p')
   " system('/usr/bin/svn up -r ' . g:currRev . ' '. expand('%:p'))
   silent exe "!" . "echo Up to revision  " . g:temp
-  silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "/home/lukaszcz/backupFun/" . expand('%:t')
-  silent execute "!" . "/usr/bin/svn revert " . expand('%:p')
   silent execute "!" . "/usr/bin/svn up -r" . g:temp . " " . expand('%:p')
-  " normal :!/usr/bin/svn up -r =g:currRev p
-  " execute "!" . "/usr/bin/svn up -r " . g:currRev . " " . expand('%:p')
+  silent execute "!". "patch -p0 -i $HOME/backupFun/" . expand('%:t:r') . ".diff"
+  silent execute "!" . "rm $HOME/backupFun/" . expand('%:t:r') . ".diff"
   execute 'redraw!'
-  " echom g:currRev
 endfunction
 " }}}
 " }}}
