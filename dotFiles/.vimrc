@@ -6,6 +6,7 @@ filetype plugin indent on   " automatically finds and load specific plugin
 " SETS {{{
 set nocompatible               " Disables Vi-compatibility
 set t_Co=256
+set cursorcolumn
 set autoindent                 " Copy indent from current line when starting a new line.
 set dictionary=dict            " List of file names, separated by commas, that are used to lookup words	for keyword completion commands i_CTRL-X_CTRL-K.
 set showmatch                  " When a bracket is inserted, briefly jump to the matching one.
@@ -17,7 +18,7 @@ set hidden                     " allow buffer switching without saving"
 set term=screen-256color
 set clipboard=unnamedplus      " Everything  yanked in vim will go to the unnamed register, and vice versa.
 set visualbell                 " Use visual bell instead of beeping.
-set undolevels=1000            " Maximum number of changes that can be undone.
+set undolevels=9999999            " Maximum number of changes that can be undone.
 set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:▸
 "set list to show spaces
 set wrap                       " Wrap lines longer than the windows width.
@@ -94,16 +95,20 @@ nnoremap <C-Q>     :q<cr>
 vnoremap <C-Q>     <esc>
 nnoremap qq :q<cr>
 
-nnoremap 0 ^
-nnoremap ^ 0
-vnoremap 0 ^
-vnoremap ^ 0
+" nnoremap 0 ^
+" nnoremap ^ 0
+" vnoremap 0 ^
+" vnoremap ^ 0
 
 " Readline-style key bindings in command-line (excerpt from rsi.vim)
 cnoremap        <C-A> <Home>
 cnoremap        <C-B> <Left>
 cnoremap <expr> <C-D> getcmdpos()>strlen(getcmdline())?"\<Lt>C-D>":"\<Lt>Del>"
 cnoremap <expr> <C-F> getcmdpos()>strlen(getcmdline())?&cedit:"\<Lt>Right>"
+
+" to not have to use arrow keys for recalling commands from history
+cmap <C-p> <Up>
+cmap <C-n> <Down>
 
 " ========================================================================================
 " remap movement for wrapped lines being the same as for non-wrapped lines
@@ -164,14 +169,18 @@ nmap <leader>so :so $MYVIMRC<cr>
 "open vimrc
 map vv <Esc>:tabe $MYVIMRC<CR>
 
+"resert colorising
+nnoremap <leader><esc> :syntax sync fromstart<CR>
+
 "spcace in normal mode
 nnoremap <space> i<space><esc>
 
 
 "file manager from buffer dir
 map <leader>v :Lexplore %:p:h<CR>
+map <leader>v v:Dirvish %<CR>
 "from termianl dir
-map <leader><space> :Lexplore<CR>
+map <leader><space> v:Dirvish<CR>
 "open quickfix
 map <leader>co :cope<CR>
 
@@ -256,6 +265,7 @@ autocmd FileChangedShellPost *
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
 autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+$/
 autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
@@ -266,6 +276,10 @@ autocmd BufWinEnter *.vimrc silent! SignifyDisable
 autocmd BufWinEnter *.log HardTimeOff
 autocmd BufWinEnter *.LOG HardTimeOff
 
+augroup vimrc
+   autocmd!
+   autocmd BufWinEnter,Syntax * syn sync minlines=500 maxlines=500
+ augroup END
 
 " Set vim to save the file on focus out.
 au FocusLost * :wa
@@ -280,8 +294,8 @@ function! TrimWhiteSpace()
 endfunction`
 nmap <leader>W :call TrimWhiteSpace()<cr>
 
-" autocmd BufWritePre     *.cpp :call TrimWhiteSpace()
-" autocmd BufWritePre     *.hpp :call TrimWhiteSpace()
+autocmd BufWritePre     *.cpp :call TrimWhiteSpace()
+autocmd BufWritePre     *.hpp :call TrimWhiteSpace()
 autocmd BufWritePre     *.ttcn3 :call TrimWhiteSpace()
 autocmd BufWinEnter     *.LOG :set filetype=logreview
 
@@ -343,7 +357,6 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'Shougo/neoyank.vim'
 " Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-surround'
-Plug 'godlygeek/tabular'
 Plug 'itchyny/lightline.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -414,11 +427,16 @@ Plug 'vim-utils/vim-vertical-move' " . These move a cursor 'up' or 'down' as man
 Plug 'terryma/vim-multiple-cursors'
 Plug 'paul-nechifor/vim-svn-blame'
 Plug 'sk1418/HowMuch'
-Plug 'osyo-manga/vim-anzu'
+Plug 'osyo-manga/vim-anzu' " count appearances of search pattern
 Plug 'jaxbot/semantic-highlight.vim'
-Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-eunuch' "Vim sugar for the UNIX shell commands that need it the most.
 Plug 'vheon/vim-cursormode' " multicursor edit
 Plug 'chrisbra/NrrwRgn' "focus on a selected region while making the rest inaccessible. NRP, NRM
+Plug 'justinmk/vim-dirvish' " Directory viewer for Vim  gf / c-w f
+Plug 'tommcdo/vim-lion' "A simple alignment operator for Vim text editor gl gLip=
+Plug 'tpope/vim-unimpaired' " pairs of handy bracket mappings 
+Plug 'nelstrom/vim-visual-star-search'
+Plug 'tmux-plugins/vim-tmux-focus-events' "FocusGained and FocusLost autocommand events are working in terminal vim now
 " Plug 'vim-scripts/ZoomWin'
 " Plug 'djoshea/vim-autoread'
 " Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
@@ -492,14 +510,14 @@ augroup END
 " let g:fzf_files_options =
 "             \ '--preview "highlight -q --force -O ansi /opt/python-pygments/noarch/2.2.0.p360-1/bin/pygmentize {} || cat {}"'
 " let g:fzf_files_options =
-"    \ '--preview "(coderay {} || cat {}) 2> /dev/null | head -'.&lines.'"'
+"    \ '--preview "(/opt/python-pygments/noarch/2.2.0.p360-1/bin/pygmentize {} || cat {}) 2> /dev/null " "| head -'.&lines.'"'
 " Files with preview
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right', '?'), <bang>0)
 
 "ag with preview
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>, '--color-path 400 --color-line-number 400',
+  \ call fzf#vim#ag(<q-args>, '-w --color-path 400 --color-line-number 400',
   \                 <bang>0 ? fzf#vim#with_preview('up:60%')
   \                         : fzf#vim#with_preview('right:50%:wrap', '?'),
   \                 <bang>0)
@@ -519,6 +537,7 @@ let g:fzf_layout = { 'down': '~100%' }
 " notational fzf
 let g:nv_directories = ['~/Documents/inne', '~/Documents/praca', '~/Documents/lte' ]
 let g:nv_use_short_pathnames = 1
+
 " }}}
 " unite {{{
 "mapping
@@ -596,6 +615,9 @@ let g:EasyMotion_smartcase = 1
 let g:EasyMotion_do_mapping = 0
 " }}}
 "
+" vim-lion {{{
+let b:lion_squeeze_spaces = 1
+" }}}
 "UltiSnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<tab>"
@@ -614,6 +636,9 @@ let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
 let g:bookmark_highlight_lines = 1
 " }}}
 "
+" dirvish {{{
+let g:dirvish_mode = ':sort ,^.*[\/],'
+" }}}
 "rainbow parentheses {{{
 
 let g:rbpt_colorpairs = [
@@ -707,16 +732,6 @@ let g:cpp_experimental_template_highlight = 1
 let g:cpp_class_scope_highlight = 1
 let g:cpp_member_variable_highlight = 1
 "}}}
-"tabularize {{{
-" if exists(":Tabularize")
-  nmap <Leader>a= :Tabularize /=<CR>
-  vmap <Leader>a= :Tabularize /=<CR>
-  nmap <Leader>a: :Tabularize /:\zs<CR>
-  vmap <Leader>a: :Tabularize /:\zs<CR>
-  vmap <Leader>a, :Tabularize /,<CR>
-  nmap <Leader>a, :Tabularize /,<CR>
-" endif
-"}}}
 "
 "lightline {{{
 let g:lightline = {
@@ -748,7 +763,7 @@ nnoremap  <leader>sc :CSearchContext <c-r><c-w>
 nnoremap  <leader>ch :CCallHierarchy!<cr>
 " let g:SuperTabDefaultCompletionType = 'context'
 let g:EclimCSearchSingleResult='split'
-let g:EclimCppValidate = 0
+let g:EclimCValidate = 0
 "}}}
 "my functions {{{
 "add semicolon on the end function {{{
@@ -774,21 +789,37 @@ function! CopyPath()
 endfunction
 "}}}
 "go through revisions in svn {{{
-nnoremap <leader>br :call BackRev()<cr>
-function! BackRev()
+
+function! ShowDiffOldRev(...)
   let prevRev=expand("<cword>")
   let prevRev-=1
-  if 'cpp' !~ expand('%:e') && 'hpp' !~ expand('%:e')
+  execute "!" . "echo argument " . a:1
+  if a:1
+    let prevRev=a:1
+  endif
+  if 'cpp' !~ expand('%:e') && 'hpp' !~ expand('%:e') || empty(expand('%:e'))
     silent execute "q"
   endif
-  silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "$HOME/backupFun/" . expand('%:t:r') . ".diff"
-  silent execute "!" . "/usr/bin/svn revert " . expand('%:p')
-  silent execute  "!" . "/usr/bin/svn up -r " . prevRev . "  " . expand('%:p')
+  let l:temp=system("/usr/bin/svn info | awk -F: '/Root Path: (.*)/ { print $2 }' | xargs | awk -F/ '{ print $NF }'")
+  let l:svnRootDir=substitute(l:temp, '\n$', '', '')
+  silent execute "cd /var/fpwork/$USER/" . l:svnRootDir
+  let l:filePath=expand('%')
+  silent execute '!' . '/usr/bin/svn export --force https://ulisop10.emea.nsn-net.net/isource/svnroot/BTS_SC_MAC_PS_WMP/' .  l:svnRootDir .'/' . l:filePath . '@' . prevRev . ' $HOME/backupFun/svnTemp.cpp'
+  silent execute '!' . 'cat $HOME/backupFun/svnTemp.cpp >  $HOME/backupFun/tempDiffFun.cpp'
+  normal! :vsplit $HOME/backupFun/tempDiffFun.cpp
+  normal! :windo diffthis
   execute 'redraw!'
 endfunction
 
 
-function! ShowDiff()
+function! TempRevert()
+  silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "$HOME/backupFun/" . expand('%:t:r') . ".diff"
+  silent execute "!" . "/usr/bin/svn revert " . expand('%:p')
+  execute 'redraw!'
+endfunction
+
+
+function! ShowCommit()
   let rev=expand("<cword>")
   silent execute "!" "/usr/bin/svn log -r " . rev . " > temp.diff"
   silent execute "!". "/usr/bin/svn diff -c " . rev . " >> temp.diff"
@@ -809,6 +840,19 @@ execute "!" . "echo   message " . message
     normal! A ------> i am applicaiton
   endif
   normal n
+  execute 'redraw!'
+endfunction
+
+nnoremap <leader>br :call BackRev()<cr>
+function! BackRev()
+  let prevRev=expand("<cword>")
+  let prevRev-=1
+  if 'cpp' !~ expand('%:e') && 'hpp' !~ expand('%:e') || empty(expand('%:e'))
+    silent execute "q"
+  endif
+  silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "$HOME/backupFun/" . expand('%:t:r') . ".diff"
+  silent execute "!" . "/usr/bin/svn revert " . expand('%:p')
+  silent execute  "!" . "/usr/bin/svn up -r " . prevRev . "  " . expand('%:p')
   execute 'redraw!'
 endfunction
 
