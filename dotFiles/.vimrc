@@ -133,6 +133,7 @@ nnoremap ^ <nop>
 nnoremap <silent> [w <esc>:tabmove -1<cr>
 nnoremap <silent> ]w <esc>:tabmove +1<cr>
 
+
 " ,[HJKL] - Move split
 nnoremap <leader>H <C-W>H
 nnoremap <leader>J <C-W>J
@@ -208,9 +209,9 @@ map <leader>h :AV<cr>
 "change word to WORD XD
 inoremap <C-F> <Esc>gUiw`]a
 
-" switch buffers fast
-nnoremap <S-Left>  :bp<cr>
-nnoremap <S-Right> :bp<cr>
+" switch quick list fast
+nnoremap [q  :cp<cr>zz
+nnoremap ]q :cn<cr>zz
 
 " saves effort of going to beginning of word
 " nnoremap yw yiw
@@ -275,6 +276,8 @@ autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
 autocmd BufWinEnter *.vimrc silent! SignifyDisable
 autocmd BufWinEnter *.log HardTimeOff
 autocmd BufWinEnter *.LOG HardTimeOff
+autocmd BufWinEnter *.log set colorcolumn=0
+autocmd BufWinEnter *.LOG set colorcolumn=0
 
 augroup vimrc
    autocmd!
@@ -348,7 +351,7 @@ filetype off                  " required
 call plug#begin()
 " All of your Plugins must be added before the following line
 Plug 'tpope/vim-commentary'
-Plug 'kien/rainbow_parentheses.vim'
+Plug 'eapache/rainbow_parentheses.vim'
 
 Plug 'simnalamburt/vim-mundo' "version control in vim
 Plug 'SirVer/ultisnips' "snippets
@@ -399,7 +402,8 @@ Plug 'tpope/vim-repeat' " make dot better
 Plug 'wellle/targets.vim' " It expands on the idea of simple commands like di'
 Plug 'FooSoft/vim-argwrap'
 Plug 'Yggdroot/indentLine' "This plugin is used for displaying thin vertical lines at each indentation level for code indented with spaces
-Plug 'zhaocai/GoldenView.Vim' "Always have a nice view for vim split windows
+" Plug 'roman/golden-ratio' "Always have a nice view for vim split windows
+Plug 'justincampbell/vim-eighties'
 " Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'andreshazard/vim-logreview'
 " Plug 'Shougo/neocomplete.vim'
@@ -413,8 +417,8 @@ Plug 'sgur/unite-qf' " unite quickfix
 
 Plug 'tommcdo/vim-exchange' "exchange words cx
 Plug 'octol/vim-cpp-enhanced-highlight'
-Plug 'junegunn/vim-peekaboo' " c-r macros
-Plug 'ervandew/supertab'
+" Plug 'junegunn/vim-peekaboo' " c-r macros
+" Plug 'ervandew/supertab'
 " Plug 'majutsushi/tagbar'
 " Plug 'osyo-manga/vim-over' " %s shows how it change
 Plug 'tpope/vim-endwise' " add #endif etc at the end
@@ -433,10 +437,12 @@ Plug 'tpope/vim-eunuch' "Vim sugar for the UNIX shell commands that need it the 
 Plug 'vheon/vim-cursormode' " multicursor edit
 Plug 'chrisbra/NrrwRgn' "focus on a selected region while making the rest inaccessible. NRP, NRM
 Plug 'justinmk/vim-dirvish' " Directory viewer for Vim  gf / c-w f
-Plug 'tommcdo/vim-lion' "A simple alignment operator for Vim text editor gl gLip=
 Plug 'tpope/vim-unimpaired' " pairs of handy bracket mappings 
 Plug 'nelstrom/vim-visual-star-search'
 Plug 'tmux-plugins/vim-tmux-focus-events' "FocusGained and FocusLost autocommand events are working in terminal vim now
+Plug 'junegunn/vim-easy-align'
+Plug 'szw/vim-maximizer'
+Plug 'tenfyzhong/axring.vim' " ax enhancement c-a c-x
 " Plug 'vim-scripts/ZoomWin'
 " Plug 'djoshea/vim-autoread'
 " Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
@@ -636,6 +642,31 @@ let g:bookmark_auto_save_file = '/tmp/my_bookmarks'
 let g:bookmark_highlight_lines = 1
 " }}}
 "
+"axring {{{
+let g:axring_rings = [
+      \ ['&&', '||'],
+      \ ['&', '|', '^'],
+      \ ['&=', '|=', '^='],
+      \ ['>>', '<<'],
+      \ ['>>=', '<<='],
+      \ ['==', '!='],
+      \ ['>', '<', '>=', '<='],
+      \ ['++', '--'],
+      \ ['true', 'false'],
+      \ ['GLO_FALSE', 'GLO_TRUE'],
+      \ ['verbose', 'debug', 'info', 'warn', 'error', 'fatal'], 
+      \ ]
+"}}}
+"easy-align {{{
+" Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap ga <Plug>(EasyAlign)
+
+" Start interactive EasyAlign for a motion/text object (e.g. gaip)
+nmap ga <Plug>(EasyAlign)
+"}}}
+"maximizer {{{
+let g:maximizer_default_mapping_key = '<leader>ma'
+"}}}
 " dirvish {{{
 let g:dirvish_mode = ':sort ,^.*[\/],'
 " }}}
@@ -661,10 +692,27 @@ let g:rbpt_colorpairs = [
 " \ ['gray',        'RoyalBlue3'],
 let g:rbpt_max = 16
 let g:rbpt_loadcmd_toggle = 0
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
+let g:bold_parentheses = 1      " Default on
+function! Parentheses()
+   normal :RainbowParenthesesToggle
+   normal :RainbowParenthesesLoadRound
+   normal :RainbowParenthesesLoadSquare
+   normal :RainbowParenthesesLoadBraces
+  normal :RainbowParenthesesLoadChevrons 
+  normal :RainbowParenthesesToggle
+  normal :RainbowParenthesesLoadRound
+  normal :RainbowParenthesesLoadSquare
+  normal :RainbowParenthesesLoadBraces
+  normal :RainbowParenthesesLoadChevrons 
+endfunction
+augroup parentheses
+  au!
+  au VimEnter * RainbowParenthesesToggle
+  au Syntax * RainbowParenthesesLoadRound
+  au Syntax * RainbowParenthesesLoadSquare
+  au Syntax * RainbowParenthesesLoadBraces
+  au Syntax * RainbowParenthesesLoadChevrons 
+augroup END 
 " }}}
 "anzu , nN search {{{
 " ========================================================================================
@@ -698,6 +746,13 @@ map y <Plug>(highlightedyank)
 let g:highlightedyank_highlight_duration = 1200
 "}}}
 "
+"eighties {{{
+let g:eighties_enabled = 1
+let g:eighties_minimum_width = 120
+let g:eighties_extra_width = 0 " Increase this if you want some extra room
+let g:eighties_compute = 1 " Disable this if you just want the minimum + extra
+let g:eighties_bufname_additional_patterns = ['fugitiveblame']
+"}}}
 "hardtime {{{
 let g:hardtime_ignore_buffer_patterns = [".vimrc"]
 let g:hardtime_default_on = 1
@@ -740,14 +795,14 @@ let g:lightline = {
   \  }
   \ }
 "}}}
-"golden view {{{
-let g:goldenview__enable_default_mapping = 0
+"golden ratio {{{
+let g:golden_ratio_filetypes_blacklist = ["unite", "netrw", "__Mundo__", "__Mundo_Preview__", "diff"]
 "}}}
 "semantic colors {{{
 " nnoremap <Leader>sc :SemanticHighlightToggle<cr>
 "}}}
 "peekaboo {{{
-let g:peekaboo_delay = 600
+" let g:peekaboo_delay = 600
 "}}}
 "indent {{{
 let g:indentLine_color_term = 239
@@ -821,9 +876,15 @@ endfunction
 
 function! ShowCommit()
   let rev=expand("<cword>")
-  silent execute "!" "/usr/bin/svn log -r " . rev . " > temp.diff"
-  silent execute "!". "/usr/bin/svn diff -c " . rev . " >> temp.diff"
-  normal! :vs temp.diff
+  silent execute "!" "/usr/bin/svn log -r " . rev . " > /home/lukaszcz/backupFun/temp.diff"
+  silent execute "!". "/usr/bin/svn diff -c " . rev . " >> /home/lukaszcz/backupFun/temp.diff"
+  normal! :vs /home/lukaszcz/backupFun/temp.diff
+  execute 'redraw!'
+endfunction
+
+function! ShowDiff()
+  silent execute "!". "/usr/bin/svn diff " . expand('%:p') . " >> /home/lukaszcz/backupFun/temp.diff"
+  normal! :vs /home/lukaszcz/backupFun/temp.diff
   execute 'redraw!'
 endfunction
 
