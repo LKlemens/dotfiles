@@ -64,6 +64,7 @@ set synmaxcol=128
 set foldenable          " enable folding
 " set foldlevelstart=10   " open most folds by default
 set foldmethod=indent   " fold based on indent level
+set cmdheight=2
 syntax sync minlines=256
 
 
@@ -90,9 +91,9 @@ inoremap kj <esc>
 let mapleader=','
 
 " Quit
-inoremap <C-Q>     <esc>:q<cr>
-nnoremap <C-Q>     :q<cr>
-vnoremap <C-Q>     <esc>
+inoremap <C-q>     <esc>:q<cr>
+nnoremap <C-q>     :q<cr>
+vnoremap <C-q>     <esc>
 nnoremap qq :q<cr>
 
 " nnoremap 0 ^
@@ -274,8 +275,8 @@ autocmd BufWinEnter __Mundo__ call clearmatches()
 autocmd BufWinEnter __Tagbar__ call EasyMode()
 autocmd BufReadPost,BufWinEnter,VimEnter __Tagbar*  silent! call EasyMode()
 autocmd BufWinEnter *.vimrc silent! SignifyDisable
-autocmd BufWinEnter *.log HardTimeOff
-autocmd BufWinEnter *.LOG HardTimeOff
+" autocmd BufWinEnter *.log HardTimeOff
+" autocmd BufWinEnter *.LOG HardTimeOff
 autocmd BufWinEnter *.log set colorcolumn=0
 autocmd BufWinEnter *.LOG set colorcolumn=0
 
@@ -351,7 +352,8 @@ filetype off                  " required
 call plug#begin()
 " All of your Plugins must be added before the following line
 Plug 'tpope/vim-commentary'
-Plug 'eapache/rainbow_parentheses.vim'
+" Plug 'eapache/rainbow_parentheses.vim'
+Plug 'junegunn/rainbow_parentheses.vim'
 
 Plug 'simnalamburt/vim-mundo' "version control in vim
 Plug 'SirVer/ultisnips' "snippets
@@ -366,7 +368,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'https://github.com/Alok/notational-fzf-vim' " nice flow through notations
 Plug 'easymotion/vim-easymotion' " spped up motions in vim
 
-Plug 'takac/vim-hardtime'
+" Plug 'takac/vim-hardtime'
 Plug 'jrosiek/vim-mark' "Highlight several words in different colors simultaneously
 Plug 'bgrohman/vim-bg-sessions'
 " Plug 'junegunn/limelight.vim'
@@ -387,6 +389,8 @@ Plug 'morhetz/gruvbox' "colorscheme
 " Plug 'chriskempson/base16-vim'
 Plug 'junegunn/seoul256.vim'
 Plug 'gmoe/vim-espresso'
+Plug 'KabbAmine/yowish.vim'
+Plug 'KeitaNakamura/neodark.vim'
 
 Plug 'flyovergu/cu.vim' " convert between camelCase and underscoreCase.
 Plug 'vim-scripts/svn_line_history.vim'
@@ -443,6 +447,11 @@ Plug 'tmux-plugins/vim-tmux-focus-events' "FocusGained and FocusLost autocommand
 Plug 'junegunn/vim-easy-align'
 Plug 'szw/vim-maximizer'
 Plug 'tenfyzhong/axring.vim' " ax enhancement c-a c-x
+Plug 'machakann/vim-swap' "Reorder delimited items.
+Plug 'terryma/vim-expand-region'
+Plug 'majkinetor/unite-cmdmatch', { 'depends': 'Shougo/unite.vim', 'mappings' : [['c', '<Plug>(unite_cmdmatch_complete)']] }
+Plug 'Shougo/echodoc.vim' "Print documents in echo area.
+cm <c-o> <Plug>(unite_cmdmatch_complete)'
 " Plug 'vim-scripts/ZoomWin'
 " Plug 'djoshea/vim-autoread'
 " Plug 'sk1418/Join' "a better (hopefully) :Join command in vim
@@ -460,7 +469,7 @@ call plug#end()            " required
 
 "open files fzf
 "change dir with fzf
-nnoremap <leader>gd :Cd /var/fpwork/$USER/trunk<CR>
+nnoremap <leader>gd :call GetSvnRoot()<cr>
 imap <c-x><c-l> <plug>(fzf-complete-line)
 inoremap <expr> <c-x><c-k> fzf#complete('cat /var/fpwork/$USER/universalTags/final')
 map <C-p> :Files<cr>
@@ -541,7 +550,7 @@ let g:fzf_layout = { 'down': '~100%' }
 
 "end fzf
 " notational fzf
-let g:nv_directories = ['~/Documents/inne', '~/Documents/praca', '~/Documents/lte' ]
+let g:nv_directories = ['$HOME/Documents/inne', '~/Documents/praca', '~/Documents/lte' ]
 let g:nv_use_short_pathnames = 1
 
 " }}}
@@ -671,47 +680,10 @@ let g:maximizer_default_mapping_key = '<leader>ma'
 let g:dirvish_mode = ':sort ,^.*[\/],'
 " }}}
 "rainbow parentheses {{{
-
-let g:rbpt_colorpairs = [
-    \ ['brown',       'RoyalBlue3'],
-    \ ['Darkblue',    'SeaGreen3'],
-    \ ['darkgreen',   'firebrick3'],
-    \ ['darkcyan',    'RoyalBlue3'],
-    \ ['darkred',     'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['brown',       'firebrick3'],
-    \ ['black',       'SeaGreen3'],
-    \ ['darkmagenta', 'DarkOrchid3'],
-    \ ['Darkblue',    'firebrick3'],
-    \ ['darkgreen',   'RoyalBlue3'],
-    \ ['darkcyan',    'SeaGreen3'],
-    \ ['red',         'firebrick3'],
-    \ ]
-" \ ['darkred',     'DarkOrchid3'],
-" \ ['darkgray',    'DarkOrchid3'],
-" \ ['gray',        'RoyalBlue3'],
-let g:rbpt_max = 16
-let g:rbpt_loadcmd_toggle = 0
-let g:bold_parentheses = 1      " Default on
-function! Parentheses()
-   normal :RainbowParenthesesToggle
-   normal :RainbowParenthesesLoadRound
-   normal :RainbowParenthesesLoadSquare
-   normal :RainbowParenthesesLoadBraces
-  normal :RainbowParenthesesLoadChevrons 
-  normal :RainbowParenthesesToggle
-  normal :RainbowParenthesesLoadRound
-  normal :RainbowParenthesesLoadSquare
-  normal :RainbowParenthesesLoadBraces
-  normal :RainbowParenthesesLoadChevrons 
-endfunction
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['<','>'], ['{', '}']]
 augroup parentheses
   au!
-  au VimEnter * RainbowParenthesesToggle
-  au Syntax * RainbowParenthesesLoadRound
-  au Syntax * RainbowParenthesesLoadSquare
-  au Syntax * RainbowParenthesesLoadBraces
-  au Syntax * RainbowParenthesesLoadChevrons 
+  au FileType cpp RainbowParentheses
 augroup END 
 " }}}
 "anzu , nN search {{{
@@ -813,8 +785,8 @@ let g:mwDefaultHighlightingNum = 15
 "}}}
 "}}}
 "eclim {{{
-nnoremap  <leader>d :CSearch <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
-nnoremap  <leader>sc :CSearchContext <c-r><c-w>
+nnoremap  <leader>d :CSearch -p <c-r><c-w> -s project -x all:cclose<cr>:Unite qf<cr>
+nnoremap  <leader>sc :CSearchContext <c-r><c-w><cr>:cclose<cr>:Unite qf<cr>
 nnoremap  <leader>ch :CCallHierarchy!<cr>
 " let g:SuperTabDefaultCompletionType = 'context'
 let g:EclimCSearchSingleResult='split'
@@ -866,6 +838,22 @@ function! ShowDiffOldRev(...)
   execute 'redraw!'
 endfunction
 
+function! GetSvnRoot()
+  let l:svnErr = system("svn info 2>&1 | cut -d' ' -f2 |  grep E155")
+  let l:deletedEOF=substitute(l:svnErr, '\n$', '', '')
+
+  if empty(l:deletedEOF)
+    let l:temp=system("/usr/bin/svn info | awk -F: '/Root Path: (.*)/ { print $2 }' | xargs | awk -F/ '{ print $NF }'")
+    let g:svnRootDir=substitute(l:temp, '\n$', '', '')
+    execute ":Cd /var/fpwork/lukaszcz/" . g:svnRootDir
+  else
+    let g:pathPwd=system("pwd")
+    g:pathPwd=substitute(g:pathPwd, '\n$', '', '')
+    execute ":Cd " . g:pathPwd
+  endif
+
+endfunction
+
 
 function! TempRevert()
   silent execute "!" . "/usr/bin/svn diff " . expand('%:p') . " > " .  "$HOME/backupFun/" . expand('%:t:r') . ".diff"
@@ -883,7 +871,7 @@ function! ShowCommit()
 endfunction
 
 function! ShowDiff()
-  silent execute "!". "/usr/bin/svn diff " . expand('%:p') . " >> /home/lukaszcz/backupFun/temp.diff"
+  silent execute "!". "/usr/bin/svn diff " . expand('%:p') . " > /home/lukaszcz/backupFun/temp.diff"
   normal! :vs /home/lukaszcz/backupFun/temp.diff
   execute 'redraw!'
 endfunction
