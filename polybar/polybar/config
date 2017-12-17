@@ -1,0 +1,389 @@
+[colors]
+white = #d0d0d0
+gray = #585858
+black = #990909
+red = #ec5f67
+blue = #95aec7
+yellow = #c7ae95
+green = #aec795
+purple = #c594c5
+orange = #f99157
+
+
+[bar/Bar]
+bottom = false
+dock = false
+wm-restack = i3
+width = 100%
+height = 24
+
+enable-ipc = true
+
+padding-left = 1
+padding-right = 1
+
+module-margin-right = 1
+module-margin-left = 0
+
+modules-right = weather volume temperature cpu filesystem date
+modules-center = spotify
+modules-left = i3 wlan eth battery
+
+background = #383838
+foreground = ${colors.white}
+
+underline-size = 2
+underline-color = ${colors.white}
+
+tray-detached = false
+tray-position = right
+tray-offset-x =
+tray-maxsize =
+tray-padding =
+
+font-0 = terminus:size=9;0
+font-1 = FontAwesome:size=11;0
+font-2 = TakaoGothic:weight=bold:size=12;0
+font-3 = FontAwesome:size=10;0
+
+[module/xwindow]
+type = internal/xwindow
+label = %title%
+label-maxlen = 30
+
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+;mount-1 = /home
+;mount-2 = /invalid/mountpoint
+
+label-mounted=  %{F#d0d0d0} %free%
+;label-mounted-underline = ${colors.white}
+label-mounted-padding = 1
+
+label-unmounted = "Unmounted disk!"
+label-unmounted-foreground = ${colors.black}
+
+
+[module/bspwm]
+type = internal/bspwm
+ws-icon-default = x
+
+label-active = %index%
+label-active-background = #ee333333
+;label-active-underline= #cc333333
+label-active-padding = 2
+
+label-occupied = %index%
+label-occupied-padding = 2
+
+label-urgent = %index%
+label-urgent-background = #bd2c40
+label-urgent-padding = 2
+
+label-empty = %index%
+label-empty-foreground = #55
+label-empty-padding = 2
+
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = false
+pin-workspaces = true
+
+label-focused-background = #383838
+label-focused-underline = ${colors.blue}
+label-focused-padding = 1
+
+label-unfocused-padding = 1
+
+label-urgent-background = ${colors.blue}
+label-urgent-padding = 1
+
+label-visible-foreground = ${colors.white}
+label-visible-padding = 1
+
+
+[module/mpd]
+type = internal/mpd
+
+host = 127.0.0.1
+port = 4200
+
+interval = 2
+
+format-online = <label-song> <icon-prev> <icon-play> <icon-pause> <icon-next>
+format-offline = <label-offline>
+
+label-offline =  no music
+label-offline-foreground = ${colors.gray}
+
+label-song = %artist% - %title%
+label-song-maxlen = 95
+label-song-ellipsis = true
+
+icon-prev = 
+icon-seekb = <<
+icon-stop = o
+icon-pause = 
+icon-play = 
+icon-next = 
+icon-seekf = >>
+
+icon-random = S
+icon-repeat = R
+
+toggle-on-foreground = #e60053
+toggle-off-foreground = #66
+
+
+[module/cpu]
+format-label = internal/cpu
+
+format = <label>
+
+ramp-coreload-0 = ▁
+ramp-coreload-1 = ▂
+ramp-coreload-2 = ▃
+ramp-coreload-3 = ▄
+ramp-coreload-4 = ▅
+ramp-coreload-5 = ▆
+ramp-coreload-6 = ▇
+ramp-coreload-7 = █
+;ramp-coreload-underline = ${colors.white}
+
+type = internal/cpu
+interval = 2
+label = %{F${colors.white}  %percentage% %{F-}
+;label-underline = ${colors.white}
+padding= 2
+
+
+
+[module/memory]
+type = internal/memory
+interval = 2
+
+label = %{F${colors.white}  %percentage_used% %{F-}
+label-underline = ${colors.white}
+label-foreground = ${colors.white}
+
+[module/wlan]
+type = internal/network
+interface = wlp2s0
+interval = 3.0
+
+format-connected-padding = 1
+format-disconnected-padding = 1
+
+format-connected = <label-connected>
+;format-connected-underline = ${colors.white}
+format-disconnected-underline = ${colors.red}
+
+label-name-foreground = ${colors.gray}
+label-connected =  %{F#585858}%essid%
+label-disconnected = 
+label-disconnected-foreground = ${colors.gray}
+
+[module/ram]
+type = internal/memory
+interval = 3
+
+format-prefix = 
+format-prefix-foreground = ${colors.orange}
+format-overline = ${colors.orange}
+format-padding = 1
+
+label = %{A:termite -e htop &:}%percentage_used:2%%%{A}
+label-padding-left = 1
+
+[module/eth]
+type = internal/network
+interface = enp3s0
+interval = 3.0
+
+format-connected-padding = 1
+format-disconnected-padding = 1
+
+format-connected-underline = ${colors.white}
+#format-disconnected-underline = ${colors.red}
+
+label-connected = 
+#label-disconnected = 
+#label-disconnected-foreground = ${colors.gray}
+
+[module/date]
+type = internal/date
+date-alt =   %b/%d/%A  %H:%M
+date =  %{F#d0d0d0} %H:%M
+date-foreground = ${color.blue}
+interval = 5
+;format-underline = ${colors.white}
+;format-background = ${colors.blue}
+format-foreground = ${colors.white}
+format-padding = 1
+
+
+
+[module/volume]
+type = internal/volume
+
+format-volume =  <bar-volume>
+
+label-volume = VOL
+label-volume-foreground = ${root.foreground}
+
+label-muted =  sound muted
+label-muted-foreground = ${colors.gray}
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.blue}
+bar-volume-foreground-1 = ${colors.blue}
+bar-volume-foreground-2 = ${colors.blue}
+bar-volume-foreground-3 = ${colors.blue}
+bar-volume-foreground-4 = ${colors.yellow}
+bar-volume-foreground-5 = ${colors.orange}
+bar-volume-gradient = false
+bar-volume-indicator = 
+bar-volume-indicator-font = 4
+bar-volume-indicator-foreground = ${colors.white}
+bar-volume-fill = 
+bar-volume-fill-font = 4
+bar-volume-empty = 
+bar-volume-empty-font = 4
+bar-volume-empty-foreground = ${colors.gray}
+
+
+[module/battery]
+;type = internal/battery
+;battery = BAT1
+;adapter = ACAD
+;full-at = 98
+;
+;format-charging = <animation-charging> <label-charging>
+;format-charging-underline = ${colors.blue}
+;format-charging-padding = 1
+;
+;format-discharging = <ramp-capacity> <label-discharging>
+;format-discharging-underline = ${colors.red}
+;format-discharging-padding = 1
+;
+;format-full =   <label-full>
+;format-full-underline = ${self.format-charging-underline}
+;format-full-overline = ${self.format-charging-underline}
+;format-full-padding = 1
+;
+;ramp-capacity-0 = 
+;ramp-capacity-1 = 
+;ramp-capacity-2 = 
+;ramp-capacity-foreground = ${colors.red}
+;
+;animation-charging-0 = 
+;animation-charging-1 = 
+;animation-charging-2 = 
+;animation-charging-3 = 
+;animation-charging-4 = 
+;animation-charging-foreground = ${colors.blue}
+;animation-charging-framerate = 500
+
+type = internal/battery
+full-at = 99
+battery = BAT1
+adapter = ACAD
+
+time-format = %H:%M
+format-charging = <animation-charging> <label-charging>
+format-charging-foreground = ${colors.green}
+format-charging-overline = ${colors.green}
+format-charging-padding = 1
+
+format-discharging = <ramp-capacity> <label-discharging>
+format-full-overline = ${colors.green}
+format-full-padding = 1
+
+label-charging = %{F#b7b8b9}%percentage:2%%%{F-} %time%
+label-discharging = %percentage:2%%   %time% %{o- -o}
+label-discharging-foreground = ${colors.gray}
+label-full = %{F#99c794} %{F-} %percentage%% %{F#fac863}%{F-}
+format-padding = 1
+
+; Red
+ramp-capacity-0 = %{F#ec5f67 o#ec5f67 +o}  %{F-}
+ramp-capacity-1 = %{F#fac863  o#ec5f67 +o}  %{F-}
+; Yellow
+ramp-capacity-2 = %{F#95aec7 o#fac863 +o}  %{F-}
+ramp-capacity-3 = %{F#95aec7 o#fac863 +o}  %{F-}
+; Green
+ramp-capacity-4 = %{F#99c794 o#99c794 +o}  %{F-}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+
+label-padding-left = 1
+
+[module/temperature]
+type = internal/temperature
+thermal-zone = 0
+warn-temperature = 65
+
+format = <label>
+;format-underline = ${colors.white}
+format-warn = <label-warn>
+format-warn-underline = ${colors.red}
+
+format-padding = 1
+format-warn-padidng = 1
+
+label =  %temperature%
+label-warn =  %temperature%
+
+ramp-0 = 
+ramp-1 = 
+ramp-2 = 
+ramp-foreground = #55
+
+[module/spotify]
+type = custom/script
+format = <label>
+format-prefix = " "
+exec = ~/.config/polybar/spotify.sh
+tail = true
+interval = 2
+
+
+
+[module/weather]
+type = custom/script
+interval = 300
+format = <label>
+format-prefix = " "
+exec = ~/.config/polybar/weather
+format-padding = 2
+
+[module/pomodoro]
+type = custom/script
+; Use pomodoro glyphs in Nerd fonts
+exec = pymodoro --break-prefix " " --pomodoro-prefix " " --pomodoro ─ --empty "  " --break  --length 5
+; Use default symbols
+;exec = pymodoro --length 5
+label = %output%
+tail = true
+interval = 1
+; Start or reset the timer
+;click-left = if [ -e ~/.pomodoro_session ]; then rm ~/.pomodoro_session; else echo "25 5" > ~/.pomodoro_session; fi
+; Increase pomodoro time
+;click-right = echo "$((`cut .pomodoro_session -d ' ' -f 1`+5)) 5" > .pomodoro_session
+; Reduce pomodoro time
+;click-middle = echo "$((`cut .pomodoro_session -d ' ' -f 1`-5)) 5" > .pomodoro_session
+
+
+
+
+
