@@ -361,9 +361,9 @@ format-prefix = " "
 format-prefix-foreground = ${colors.darkGreen}
 exec = spotify-cli --status
 tail = true
-interval = 1
+interval = 4
 format-underline = #1db954
-exec-if = pgrep -x spotify
+;exec-if = pgrep -x spotify
 
 
 
