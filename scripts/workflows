@@ -1,0 +1,20 @@
+#!/bin/bash
+
+menu='rofi -dmenu -i -p'
+
+work='work'
+home='home'
+
+select=$(echo -e "$work\n$home" | $menu choose: )
+
+# exit with no input
+if [[ $? -eq 1 ]]; then
+    exit 1
+fi
+
+case $select in
+  $work)
+    sh -c 'autorandr --change work' ;;
+  $home)
+    sh -c 'autorandr --change home' ;;
+esac

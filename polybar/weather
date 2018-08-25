@@ -4,6 +4,7 @@
 import requests
 
 CITY = "3094802"
+# CITY = "3080866"
 API_KEY = "feb5a26a63d515e7e524f0a00bccdb7e"
 UNITS = "Metric"
 UNIT_KEY = "C"

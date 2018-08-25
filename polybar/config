@@ -4,6 +4,7 @@ gray = #585858
 black = #990909
 red = #ec5f67
 blue = #95aec7
+blueU = #25F1E3
 yellow = #c7ae95
 green = #aec795
 purple = #c594c5
@@ -26,9 +27,9 @@ padding-right = 1
 module-margin-right = 1
 module-margin-left = 0
 
-modules-right = weather volume temperature cpu filesystem date
+modules-right = pacman volume temperature cpu filesystem date
 modules-center = spotify
-modules-left = i3 wlan eth battery
+modules-left = i3 wlan eth battery vpn
 
 background = #383838
 foreground = ${colors.white}
@@ -43,9 +44,9 @@ tray-maxsize =
 tray-padding =
 
 font-0 = terminus:size=9;0
-font-1 = FontAwesome:size=11;0
+font-1 = FontAwesome:size=11;2
 font-2 = TakaoGothic:weight=bold:size=12;0
-font-3 = FontAwesome:size=10;0
+font-3 = FontAwesome:size=10;2
 
 [module/xwindow]
 type = internal/xwindow
@@ -99,7 +100,7 @@ wrapping-scroll = false
 pin-workspaces = true
 
 label-focused-background = #383838
-label-focused-underline = ${colors.blue}
+label-focused-underline = ${colors.blueU}
 label-focused-padding = 1
 
 label-unfocused-padding = 1
@@ -235,7 +236,7 @@ format-padding = 1
 
 
 [module/volume]
-type = internal/volume
+type = internal/pulseaudio
 
 format-volume =  <bar-volume>
 
@@ -354,26 +355,51 @@ ramp-1 = 
 ramp-2 = 
 ramp-foreground = #55
 
+[module/vpn]
+type = custom/script
+exec = ip -4 route | ag "via*.*dev wlp2s0" | wc -l | xargs -I {} sh -c "if [[ {} -ge 2 ]] && pgrep -x openvpn > /dev/null ; then echo "";else echo ""; fi"
+;exec = if pgrep -x openvpn > /dev/null; then echo ""; else echo ""; fi
+format-foreground = #5b
+tail = true
+interval = 1
+
+[module/pacman]
+type = custom/script
+exec = sudo pacman -Syy  > /dev/null 2>&1; pikaur -Qqu  2>&1 | wc -l
+format-foreground = #5b
+format-prefix = ""
+tail = true
+interval = 3000
+
+
 [module/spotify]
 type = custom/script
 format = <label>
 format-prefix = " "
 format-prefix-foreground = ${colors.darkGreen}
-exec = spotify-cli --status
+exec = ~/.config/polybar/spotify.sh
 tail = true
-interval = 4
+interval = 1
 format-underline = #1db954
-;exec-if = pgrep -x spotify
+exec-if = pgrep -x spotify
 
-
+[module/pomo]
+type = custom/script
+format = <label>
+format-prefix = " "
+format-prefix-foreground = ${colors.red}
+tail = true
+format-underline = ${colors.red}
+interval = 1
+exec = /home/klemens/.config/scripts/pomo status | cut -c 3-
 
 
 [module/weather]
 type = custom/script
-interval = 300
+interval = 10
 format = <label>
 format-prefix = " "
-exec = ~/.config/polybar/weather
+/* exec = ~/.config/polybar/weather */
 format-padding = 2
 
 [module/pomodoro]

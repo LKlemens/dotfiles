@@ -1,0 +1,6 @@
+#! /bin/bash
+set -- $(cat $HOME/Documents/notes/dragonball.md | awk '{print $1}')
+echo you-get http://mrderp.xyz/downloads/%5BDBNL%5D%20Dragon%20Ball/$1 -o $HOME/db
+you-get http://mrderp.xyz/downloads/%5BDBNL%5D%20Dragon%20Ball/$1 -o $HOME/db
+sed -i '1d' $HOME/Documents/notes/dragonball.md
+notify-send "New dragona ball episode !"

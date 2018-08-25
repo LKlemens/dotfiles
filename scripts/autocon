@@ -1,0 +1,5 @@
+#!/bin/bash
+bluetoothctl << EOF
+connect  00:EC:0A:00:4A:F8
+EOF
+obexfs -b 00:EC:0A:00:4A:F8 ~/phone

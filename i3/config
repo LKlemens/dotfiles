@@ -4,7 +4,32 @@
 # Should you change your keyboard layout some time, delete
 # this file and re-run i3-config-wizard(1).
 #
-exec --no-startup-id feh --bg-scale /home/reed/Downloads/archwall.jpg
+
+# force_xinerama yes
+# popup_during_fullscreen ignore
+for_window [class="^.*"] border pixel 1
+workspace_layout tabbed
+mouse_warping none
+# focus_follows_mouse no
+workspace_auto_back_and_forth yes
+# sticky no
+
+assign [class="Firefox"] 
+assign [class="Termite"] 
+assign [class="Chromium"] 
+assign [class="XMind"] 
+assign [class="MuPDF"] 
+assign [class="Vivaldi"] 
+assign [class="Vivado"] 
+assign [class="Writer"] 
+assign [class="Okular"] 
+assign [class="kodi"] 
+#assign [class="Spotify"] 
+for_window [class="Spotify"] move to workspace 
+for_window [class="Thunderbird"] move to workspace 
+# for_window [class="Inboxer"] move to workspace 
+
+# border none
 
 # i3 config file (v4)
 #
@@ -31,26 +56,36 @@ font pango:monospace 8
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec termite
+bindsym $mod+Return   exec termite # -t shell -e tmux
 
 # kill focused window
 bindsym $mod+q kill
 
 #lock window
-bindsym $mod+Shift+o exec i3lock-wrapper
-bindsym $mod+End exec --no-startup-id "i3lock-wrapper && systemctl suspend"
-# start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run
+# bindsym $mod+Shift+x exec "/home/reed/.config/i3/lock.sh --pixelate   "
+bindsym $mod+p exec /home/klemens/.config/scripts/scrot.sh
+bindsym $mod+Shift+x exec "~/.config/scripts/better2 -l dim"
+bindsym $mod+End exec --no-startup-id "systemctl suspend"
+# start rofi (a program launcher)
+# bindsym $mod+d exec rofi -show run -location 1 -sidebar-mode -lines 3 -eh 2 -width 100 -padding 310 -opacity 70 -kb-row-select "Tab" -kb-row-tab "" -hide-scrollbar  -lines 2 -line-margin 0 -line-padding 1 -separator-style none -font "mono 10" -columns 9 -bw 0
+bindsym $mod+d exec rofi -show run -display-run "run: " -theme sol -width 2000 -padding 270 -separator-style none -location 0 -lines 19 -bw 0
+bindsym $mod+s exec $HOME/.config/scripts/rofis
+bindsym $mod+c exec $HOME/.config/scripts/rofiwifi
+bindsym $mod+x exec $HOME/.config/scripts/rofi-find
+bindsym $mod+Shift+p exec keepmenu
+bindsym XF86Vedeo exec $HOME/.config/scripts/workflows
+
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
+# bindsym $mod+Shift+p  exec scrot
 # change focus
-bindsym $mod+h fullscreen toggle, focus left,fullscreen toggle
+bindsym $mod+h  focus left
 bindsym $mod+j workspace prev
 bindsym $mod+k workspace next
-bindsym $mod+l fullscreen toggle, focus left,fullscreen toggle
+bindsym $mod+l  focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -59,8 +94,8 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
+# bindsym $mod+Shift+h move left
+# bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
@@ -80,7 +115,7 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
+bindsym $mod+Shift+s layout toggle split
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
@@ -97,31 +132,33 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # switch to workspace
-bindsym $mod+1 workspace 
-bindsym $mod+2 workspace 
-bindsym $mod+3 workspace 
-bindsym $mod+4 workspace 4
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+1 workspace 
+bindsym $mod+2 workspace 
+bindsym $mod+3 workspace 
+bindsym $mod+4 workspace 
+bindsym $mod+5 workspace 
+bindsym $mod+6 workspace 
+bindsym $mod+7 workspace 
+bindsym $mod+8 workspace 
+bindsym $mod+9 workspace 
+bindsym $mod+0 workspace 
 
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 
-bindsym $mod+Shift+2 move container to workspace 
-bindsym $mod+Shift+3 move container to workspace 
-bindsym $mod+Shift+4 move container to workspace 4
-bindsym $mod+Shift+5 move container to workspace 5
-bindsym $mod+Shift+6 move container to workspace 6
-bindsym $mod+Shift+7 move container to workspace 7
-bindsym $mod+Shift+8 move container to workspace 8
-bindsym $mod+Shift+9 move container to workspace 9
-bindsym $mod+Shift+0 move container to workspace 10
+bindsym $mod+Shift+1 move container to workspace 
+bindsym $mod+Shift+2 move container to workspace 
+bindsym $mod+Shift+3 move container to workspace 
+bindsym $mod+Shift+4 move container to workspace 
+bindsym $mod+Shift+5 move container to workspace 
+bindsym $mod+Shift+6 move container to workspace 
+bindsym $mod+Shift+7 move container to workspace 
+bindsym $mod+Shift+8 move container to workspace 
+bindsym $mod+Shift+9 move container to workspace 
+bindsym $mod+Shift+0 move container to workspace 
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
+#clipmenu
+bindsym $mod+Shift+v exec clipmenu
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
@@ -165,16 +202,58 @@ bar {
         mode invisible
 }
 
-bindsym $mod+Shift+f exec firefox
+bindsym $mod+Shift+f exec vivaldi-snapshot
 
 # Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q sset Master 5%+ #increase sound volume
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q sset Master 5%- #decrease sound volume
+bindsym XF86AudioRaiseVolume exec amixer set Master 10%+ #increase sound volume
+bindsym XF86AudioLowerVolume exec amixer set Master 10%- #decrease sound volume
+bindsym XF86MonBrightnessUp exec light -A 10
+bindsym XF86MonBrightnessDown exec light -U 10
 bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle # mute sound
+bindsym XF86AudioNext exec spotify-cli --next
+bindsym XF86AudioPrev exec spotify-cli --prev
+bindsym XF86AudioPlay exec spotify-cli --playpause
+bindsym --release Control+Print exec scrot -s  -e 'mv $f ~/screens/'
+bindsym --release Control+F12 exec scrot -u -e 'mv $f ~/screens'
+new_window normal 0 px
 
-# for_window [class="^.*"] border pixel 4
-# gaps inner 5
-# gaps outer 2
-#
+# Show the first scratchpad window
+bindsym $mod+minus scratchpad show
+# Make the currently focused window a scratchpad
+bindsym $mod+Shift+minus move scratchpad
+# bindsym $mod+Shift+m exec /home/klemens/.config/scripts/scratch.sh
+bindsym $mod+Shift+m [con_mark="music"] scratchpad show
+for_window [class="Spotify"] mark "music", move scratchpad
+
+# bindsym $mod+Shift+n [con_mark="messenger-client"] scratchpad show
+# for_window [title="Caprine"] mark "messenger-client", move scratchpad
+
+bindsym $mod+Shift+n [con_mark="messenger-client"] scratchpad show
+for_window [title="Signal"] mark "messenger-client", move scratchpad
+
+bindsym $mod+Shift+b [con_mark="mail"] scratchpad show
+for_window [class="Inboxer"] mark "mail", move scratchpad
+
+# bindsym $mod+Shift+p [con_mark="pomodoro"] scratchpad show
+for_window [title="pomo start"] mark "pomodoro", move scratchpad
+
+# bindsym $mod+Shift+n [con_mark="mail"] scratchpad show
+# for_window [title="Mozilla Thunderbird"] mark "-client", move scratchpad
+
+#for_window [class="^.*"] border pixel 4
+#gaps inner 5
+#gaps outer 2
 #
 
+exec --no-startup-id compton --config $HOME/.config/compton/config -b
+exec_always feh --bg-scale /home/klemens/Downloads/arch.jpg
+# exec_always compton --inactive-dim 0.3 --focus-exclude '_NET_WM_NAME@:s = "rofi"'
+bindsym $mod+m move workspace to output left
+
+# Move focused workspace to monitor
+bindsym $mod+Shift+bracketleft move container to output left
+bindsym $mod+Shift+bracketright move container to output right
+
+
+gaps inner 3
+gaps outer 3

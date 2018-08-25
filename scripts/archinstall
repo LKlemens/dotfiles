@@ -1,0 +1,31 @@
+mkfs.vfat -F32 /dev/sda1 -> uefi
+mkfs.ext2 /dev/sda2 -> boot
+mkswap /dev/sda3 -> swap
+mkfs.ext4 /dev/sda4 -> root
+mkfs.ext4 /dev/sda5 -> home
+mount /dev/sda4 /mnt
+mkdir /mnt/home
+mount /dev/sda5 /mnt/home
+mkdir /mnt/boot
+mount /dev/sda2 /mnt/boot
+wifi-menu
+vi /etc/pacman.d/mirrorlist
+vi /etc/pacman.conf
+pacstrap /mnt base base-devel -> tu skonczyłem
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+echo reed > /etc/hostname
+vi /etc/pacman.conf
+pacman -S iw wpa_supplicant wpa_actiond dialog wireless_tools zsh termite
+ln -sf /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
+mkinitcpio -p linux
+pacman -S grub
+hwclock --systohc --utc
+loadkeys pl
+vi /etc/locale.gen
+locale-gen
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+useradd -m -g users -G audio,games,log,lp,optical,power,scanner,storage,video -s /bin/zsh klemens
+
+

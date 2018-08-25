@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DMENU='rofi -dmenu -i -theme sol -width 2300 -padding 270 -separator-style none -location 0 -lines 19 -bw 0'
+
+input="$(find /home/klemens/Documents/books "*" | ag pdf | sed "s/.*\\///" |  $DMENU -p 'open: ')"
+if [ "$input" != '' ]
+then
+  path_book=$(find /home/klemens/Documents/books -iname "$input")
+	zathura "$path_book"
+fi
