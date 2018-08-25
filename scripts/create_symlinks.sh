@@ -1,18 +1,18 @@
 #!/bin/bash
-CONFIGS_PATH="/home/klemens/.config/"
-DOTFILES_PATH="/home/klemens/git/dotfiles/"
+CONFIGS_PATH="$HOME/.config/"
+DOTFILES_PATH="$HOME/git/dotfiles/"
 CONFIG_LIST="nvim/init.vim redshift.conf rofi i3 polybar scripts compton zathura"
 HOME_LIST=".zshrc .xinitrc"
 
-if find $DOTFILES_PATH 2>&1 | grep "No such file or directory";then
+if find "$DOTFILES_PATH" | grep "No such file or directory";then
   exit 0
 fi
 
 mkdir -p "$HOME/.config/backupX"
 
 for file in $CONFIG_LIST;do
-  cp -r -L "$file" "$HOME/.config/backupX"
-  rm -rf "$file"
+  cp -r -L "$CONFIGS_PATH$file" "$HOME/.config/backupX"
+  rm -rf "$CONFIGS_PATH$file"
   ln -s "$DOTFILES_PATH$file" "$CONFIGS_PATH$file"
 done
 
