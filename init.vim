@@ -1,1 +1,0 @@
-/home/klemens/git/dotfiles/nvim/init.vim
