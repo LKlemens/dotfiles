@@ -163,7 +163,7 @@ source ~/.zsh/auto-ls.zsh
 source $HOME/.config/scripts/fzfMarks.fzf
 # source $HOME/.config/scripts/zsh-vimto.zsh
 source $HOME/.config/aliasTip/alias-tips.plugin.zsh
-source $HOME/.config/scripts/enhancd/init.sh
+# source $HOME/.config/scripts/enhancd/init.sh
 bindkey '^ ' autosuggest-accept
 
 # fshow - git commit browser
