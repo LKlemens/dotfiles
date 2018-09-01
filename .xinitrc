@@ -62,6 +62,7 @@ setxkbmap pl
 setxkbmap -option "caps:backspace"
 setxkbmap -option "shift:both_capslock"
 xmodmap -e "clear Lock"
+exec dunst -no-startup-id&
 # termite --class=Upgrade --hold -e "bash -c \"rm -rf ~/.pomo/pomo.sock; ~/.config/scripts/pomo start -t my-project \"write some codes\"\""&
 # xscreensaver&
 termite --class=Upgrade --hold -e " bash -c \"tmux attach || tmux\""&

@@ -1,8 +1,8 @@
 #!/bin/bash
 CONFIGS_PATH="$HOME/.config"
 DOTFILES_PATH="$HOME/git/dotfiles"
-CONFIG_LIST="nvim/init.vim redshift.conf rofi i3 polybar scripts compton zathura"
-HOME_LIST=".zshrc .xinitrc"
+CONFIG_LIST="nvim/init.vim redshift.conf rofi i3 polybar scripts compton zathura dunst"
+HOME_LIST=".zshrc .xinitrc .gitignore .tmux.conf"
 CHANGES_FLAG=0
 
 if find "$DOTFILES_PATH" | grep "No such file or directory";then
