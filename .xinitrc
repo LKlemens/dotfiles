@@ -65,11 +65,19 @@ xmodmap -e "clear Lock"
 exec dunst -no-startup-id&
 # termite --class=Upgrade --hold -e "bash -c \"rm -rf ~/.pomo/pomo.sock; ~/.config/scripts/pomo start -t my-project \"write some codes\"\""&
 # xscreensaver&
+# lightsOn.sh 500&
 termite --class=Upgrade --hold -e " bash -c \"tmux attach || tmux\""&
 pgrep caffeine &> /dev/null || caffeine &> /dev/null &
 signal-desktop&
 # pgrep xautolock &> /dev/null || xautolock -locker 'better2 -l dim'&
-pgrep xautolock &> /dev/null || xautolock -locker 'i3lock -i ~/.cache/i3lock/current/l_dim.png -u'&
+# pgrep xautolock &> /dev/null || xautolock -locker 'i3lock -i ~/.cache/i3lock/current/l_dim.png -u'&
+xidlehook \
+  --time 5 \
+  --timer 'task stop $(cat /tmp/taskid); i3lock -i $HOME/Documents/archwall.png -u' \
+  --notify 3 \
+  --notifier  'xrandr --output "$(xrandr | grep primary | cut -d " " -f 1)" --brightness .1' \
+  --not-when-fullscreen \
+  --not-when-audio &
 eval "$(ssh-agent -s)"
 spotify &
 pgrep redshift &> /dev/null || redshift &> /dev/null &

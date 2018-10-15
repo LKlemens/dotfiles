@@ -27,9 +27,9 @@ padding-right = 1
 module-margin-right = 1
 module-margin-left = 0
 
-modules-right = pacman volume temperature cpu filesystem date
+modules-right = taskw pacman volume temperature cpu filesystem date
 modules-center = spotify
-modules-left = i3 wlan eth battery vpn
+modules-left = i3 wlan eth battery_remaider battery vpn
 
 background = #383838
 foreground = ${colors.white}
@@ -297,7 +297,7 @@ bar-volume-empty-foreground = ${colors.gray}
 ;animation-charging-framerate = 500
 
 type = internal/battery
-full-at = 99
+full-at = 70
 battery = BAT1
 adapter = ACAD
 
@@ -361,7 +361,21 @@ exec = ip -4 route | ag "via*.*dev wlp2s0" | wc -l | xargs -I {} sh -c "if [[ {}
 ;exec = if pgrep -x openvpn > /dev/null; then echo ""; else echo ""; fi
 format-foreground = #5b
 tail = true
-interval = 1
+interval = 5
+
+[module/taskw]
+type = custom/script
+exec = ~/.config/scripts/timewarrior_polybar.sh
+format-foreground = #ec5f67
+tail = true
+interval = 60
+
+[module/battery_remaider]
+type = custom/script
+exec = ~/.config/scripts/battery.sh
+format-foreground = #ec5f67
+tail = true
+interval = 10
 
 [module/pacman]
 type = custom/script

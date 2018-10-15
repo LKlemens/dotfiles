@@ -64,7 +64,7 @@ bindsym $mod+q kill
 #lock window
 # bindsym $mod+Shift+x exec "/home/reed/.config/i3/lock.sh --pixelate   "
 bindsym $mod+p exec /home/klemens/.config/scripts/scrot.sh
-bindsym $mod+Shift+x exec "~/.config/scripts/better2 -l dim"
+bindsym $mod+Shift+x exec "task stop $(cat /tmp/taskid); ~/.config/scripts/better2 -l dim"
 bindsym $mod+End exec --no-startup-id "systemctl suspend"
 # start rofi (a program launcher)
 # bindsym $mod+d exec rofi -show run -location 1 -sidebar-mode -lines 3 -eh 2 -width 100 -padding 310 -opacity 70 -kb-row-select "Tab" -kb-row-tab "" -hide-scrollbar  -lines 2 -line-margin 0 -line-padding 1 -separator-style none -font "mono 10" -columns 9 -bw 0

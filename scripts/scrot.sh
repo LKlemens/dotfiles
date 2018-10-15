@@ -14,12 +14,12 @@ CMD=$(
 input="$(xsel -o > /dev/null | $DMENU -p 'name')"
 case $CMD in
 $region)
-  scrot -s && mv ~/*.png ~/screens/$input.png
+  scrot 'sc.png' -s && mv ~/sc.png ~/screens/$input.png
 	;;
 $entire)
-  scrot -d 1 && mv ~/*.png ~/screens/$input.png
+  scrot 'sc.png' -d 1 && mv ~/sc.png ~/screens/$input.png
 	;;
 $active)
-  scrot -d 1 -u && mv ~/*.png ~/screens/$input.png
+  scrot 'sc.png' -d 1 -u && mv ~/sc.png ~/screens/$input.png
   ;;
 esac

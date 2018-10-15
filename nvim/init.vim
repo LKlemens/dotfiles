@@ -800,7 +800,7 @@ augroup END
 "}}}
 "latex {{{
 let g:livepreview_previewer = 'okular'
-let g:livepreview_engine = 'pdflatex'
+let g:livepreview_engine = 'xelatex'
 let g:polyglot_disabled = ['latex']
 " let g:vimtex_view_method = 'okular'
 map <leader>lv  <plug>(vimtex-view)

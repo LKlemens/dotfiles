@@ -1,6 +1,0 @@
-#!bin/bash
-if [ "${1}" == "pre" ]; then
-# nothing goes here
-elif [ "${1}" == "post" ]; then
-openpyn -k; sudo systemctl start openpyn
-fi

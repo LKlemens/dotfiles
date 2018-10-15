@@ -1,12 +1,4 @@
-set recolor-darkcolor "#93A1A1"
-set recolor-lightcolor "#002B36"
 set recolor true
-
-# colors
-set statusbar-bg "#000000"
-set statusbar-fg "#CC0000"
-set default-fg "#FFFFFF"
-set default-bg "#000000"
 
 # -*- mode: conf-space -*-
 

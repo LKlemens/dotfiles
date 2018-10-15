@@ -69,7 +69,7 @@ source $ZSH/oh-my-zsh.sh
 export LC_CTYPE=en_US.UTF-8
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -89,14 +89,6 @@ export LC_CTYPE=en_US.UTF-8
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-# xmodmap -e "clear Lock"
-# setxkbmap -option "shift:both_capslock"
-# setxkbmap -option "caps:backspace"
-# xmodmap -e "clear Lock"
-
 
 alias e="nvim"
 alias re="source $HOME/.zshrc"
@@ -141,29 +133,19 @@ export GOPATH=$HOME/git
 export CLASSPATH=$CLASSPATH:/usr/share/java/junit-4.12.jar:/usr/share/java/hamcrest-core.jar:/usr/share/java/hamcrest-integration.jar:/usr/lib/jvm/java-9-openjdk:$HOME/git/JFoenix/jfoenix/build/libs/jfoenix-0.0.0-SNAPSHOT.jar:.
 
 #fzf#AWESOME FZF !!!
-#--preview "(~/termpix.sh 50 {} || cat {}) 2> /dev/null | head -'.&lines.'"'
-# export FZF_DEFAULT_OPTS="-m --bind J:down,K:up,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,page-up:preview-page-up,page-down:preview-page-down --height=80 --preview 'rougify {} ' --history='/home/$USER/.local/share/fzf-history/terminal'   --bind ?:toggle-preview "
 export FZF_DEFAULT_OPTS="-m --bind J:down,K:up,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,page-up:preview-page-up,page-down:preview-page-down --height=80 --preview 'rougify {} ' --history='/home/$USER/.local/share/fzf-history/terminal'   --bind ?:toggle-preview "
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .svn -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-# bindkey '^P': /opt/vim/x86_64/8.0.069-2/bin/vim -p $(fzf);
-bindkey  -s '^p' 'nvim -p $(fzf)^M'
+bindkey  -s '^p' 'files=$(fzf) && [[ $files ]] && nvim -p $files^M'
+FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
 
 
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/auto-ls.zsh
-# source ~/.zsh/auto-fu.zsh
-# source /home/klemens/.zsh/roupa/z.sh
-# source ~/.zsh/fz/fz.sh
-source $HOME/.config/scripts/fzfMarks.fzf
-# source $HOME/.config/scripts/zsh-vimto.zsh
-source $HOME/.config/aliasTip/alias-tips.plugin.zsh
-# source $HOME/.config/scripts/enhancd/init.sh
+
 bindkey '^ ' autosuggest-accept
 
 # fshow - git commit browser
@@ -183,12 +165,17 @@ pbin() {
 "$@" | curl -F c=@- https://ptpb.pw/
 }
 
-FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 PATH="/home/klemens/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/klemens/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
 PERL_LOCAL_LIB_ROOT="/home/klemens/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 PERL_MB_OPT="--install_base \"/home/klemens/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/klemens/perl5"; export PERL_MM_OPT;
+
+source ~/.zsh/auto-ls.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $HOME/.config/scripts/fzfMarks.fzf
+source $HOME/.config/aliasTip/alias-tips.plugin.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
