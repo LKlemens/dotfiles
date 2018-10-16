@@ -46,7 +46,6 @@ echo_msg()
     && date '+%F %T' > /tmp/time_for_notify_sender
 
     echo "%{F${too_long}}$2";
-
   fi
 }
 
@@ -65,20 +64,20 @@ main()
              " $( task list | grep -A 2 Active | tail -n 1 | awk '{print $2" "$5}' )"\
              "You are learning above $time_on_learning, you deserve for rest";
 
-    # save taskid for other application e.g. i3lock
+    # save taskid for other applications e.g. i3lock
     task list | grep -A 2 Active | tail -n 1 | awk '{print $1}' > /tmp/taskid;
     date '+%F %T' > /tmp/timewvar; #save time when you finished doing the task
 
   else
 
     [[ -e /tmp/timewvar ]] && read -r last_task_date < /tmp/timewvar \
-    || date '+%F %T' > /tmp/timewvar # check if timever file exist and read it, create it if not
+    || date '+%F %T' > /tmp/timewvar # check if timewvar file exist and read it, create it if not
 
     waste_time_sec=$(( $(date -ud"$(date '+%F %T')" +%s) \
                         - $(date -ud"$last_task_date" +%s) ))
     waste_hours=$(( waste_time_sec/60/60 ))
     waste_minutes=$(( waste_time_sec/60 - waste_hours*60 ))
-    wasted_time_min=$((waste_hours*60 + waste_minutes))
+    wasted_time_min=$((waste_time_sec/60))
 
     echo_msg  $wasted_time_min \
               " $( [[ $waste_hours != '0' ]] && echo ${waste_hours}h ) ${waste_minutes}min WASTED!"\

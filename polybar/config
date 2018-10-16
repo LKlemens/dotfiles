@@ -297,7 +297,7 @@ bar-volume-empty-foreground = ${colors.gray}
 ;animation-charging-framerate = 500
 
 type = internal/battery
-full-at = 70
+full-at = 80
 battery = BAT1
 adapter = ACAD
 
