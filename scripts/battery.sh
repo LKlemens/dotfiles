@@ -75,6 +75,7 @@ function is_integer()
 
 function battery_level_diff()
 {
+  [[ -e /tmp/battery_level ]] || save_battery_level
   last_notify_battery_level="$(< /tmp/battery_level)"
   echo $(( last_notify_battery_level - LEVEL ))
 }
@@ -89,11 +90,10 @@ function save_battery_level()
   echo "$LEVEL" > /tmp/battery_level
 }
 
-function is_treshold_exceeded()
+function is_treshold_reached()
 {
-  [[ -e /tmp/battery_level ]] || save_battery_level
   diff="$(abs "$(battery_level_diff)")"
-  [[ $diff -ge $NOTIFY_TRESHOLD ]] && save_battery_level
+  [[ $diff -ge $NOTIFY_TRESHOLD ]]
 }
 
 function main()
@@ -104,12 +104,10 @@ function main()
 
   for battery in $BATTERIES; do
     LEVEL=$(< "$battery"/capacity)
-    is_treshold_exceeded || break;
-
     if [[ $LEVEL -lt $MIN ]] && ! is_charging ; then
-      notify_plug
+      is_treshold_reached && notify_plug && save_battery_level
     elif [[ $LEVEL -gt $MAX ]] && is_charging; then
-      notify_unplug
+      is_treshold_reached && notify_unplug && save_battery_level
     else
       echo " "
     fi
