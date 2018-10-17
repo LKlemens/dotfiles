@@ -1,56 +1,86 @@
 #!/usr/bin/bash
-ok='#3DD069'
-long='#E17E1F'
-too_long='#DF2121'
-wasted_period=600
-learning_period=1500
 
-
-# is_fullscreen checks if current window is in fullscreen mode
-# if it is then notifies do not show up
-is_fullscreen()
+function help()
 {
-  active_window_resolution=$(xwininfo -id "$(xdotool getactivewindow)" -stats | grep -E '(Width|Height)' | awk '{print $NF}' | xargs | sed 's/ //g')
-  screen_resolution=$(xrandr | grep '*' | tr 'x' ' ')
-  screen_resolution=${screen_resolution% *}
-  screen_resolution=${screen_resolution// /}
+	cat <<-EOF
+	Usage: $(basename "$0")
+	--not_long, -nl: Set color of msg for not long wasting/learning time
+	--long, -l: Set color of msg for long wasting/learning time
+	--too_long, -tl, -p: Set color of msg for too long wasting/learning time
+	--wasted_period, -wp, -u: Set the periodicity notifications while wasitng time
+  --learning_period, -lp, -u: Set the periodicity notifications during learning
+	--help, h: Display help
+	EOF
+}
 
-  [[ "$active_window_resolution" = "$screen_resolution" ]]
+function set_defaults()
+{
+  NOT_LONG='#3DD069'
+  LONG='#E17E1F'
+  TOO_LONG='#DF2121'
+  WASTED_PERIOD=600
+  LEARNING_PERIOD=1500
+}
+
+function parse_args()
+{
+    while (("$#")); do
+    case $1 in
+      --help|-h) help; exit 0;;
+      --not_long|-nl) shift; NOT_LONG="$1" ;shift ;;
+      --long|-l) shift; LONG="$1";shift  ;;
+      --too_long,-tl|-p) shift; TOO_LONG="$1"; shift ;;
+      --wasted_period|-wp) shift; WASTED_PERIOD="$1"; shift ;;
+      --learning_period|-lp) shift; LEARNING_PERIOD="$1"; shift ;;
+      *)  echo "Unsupported command $1" >&2; help; exit 1 ;;
+    esac
+  done
+}
+
+function getActiveWindowID
+{
+    activeWinID=$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $NF}')
+    echo "$activeWinID"
+}
+
+function is_fullscreen()
+{
+    xprop -id "$(getActiveWindowID)" | grep "STATE_FULLSCREEN" > /dev/null >&2
 }
 
 # echo_msg is reponsibility for print results on polybar
 # and send notification if time on task exceeded 25 min
-# funciton takes three aguments:
-#   1st stores learning/wasting time
-#   2nd msg for polybar
-#   3rd msg for notify-sender
-echo_msg()
+function echo_msg()
 {
-  if [[ $1 -le 5 ]]; then
+  amount_of_time="$1"
+  polybar_msg="$2"
+  notify_sender_msg="$3"
+
+  if [[ amount_of_time -le 5 ]]; then
     date '+%F %T' > /tmp/time_for_notify_sender
-    echo "%{F${ok}}$2";
-  elif [[ $1 -le 25 ]]; then
-    echo "%{F${long}}$2";
+    echo "%{F${NOT_LONG}}$polybar_msg";
+  elif [[ amount_of_time -le 25 ]]; then
+    echo "%{F${LONG}}$polybar_msg";
   else
 
     diff_time_for_notify_sec=$(( $(date -ud"$(date '+%F %T')" +%s) \
                              - $(date -ud"$(cat /tmp/time_for_notify_sender 2>/dev/null || date '+%F %T' | tee /tmp/time_for_notify_sender)" +%s) ))
 
-    notify_period_in_sec=$wasted_period
-    if [[ $3 =~ "you deserve for rest" ]]; then
-      notify_period_in_sec=$learning_period
+    notify_period_in_sec=$WASTED_PERIOD
+    if [[ $notify_sender_msg =~ "you deserve for rest" ]]; then
+      notify_period_in_sec=$LEARNING_PERIOD
     fi
 
     [[ (($diff_time_for_notify_sec -ge $notify_period_in_sec )) ]]  && ! is_fullscreen \
-    && notify-send --urgency=critical LearningCurve "$3" \
+    && notify-send --urgency=critical LearningCurve "$notify_sender_msg" \
     && date '+%F %T' > /tmp/time_for_notify_sender
 
-    echo "%{F${too_long}}$2";
+    echo "%{F${TOO_LONG}}$2";
   fi
 }
 
 #checks if there is any active task and print suitable msg on polybar
-main()
+function main()
 {
   if [[ $(task list | grep Active) ]]; then
     time_on_learning=$( task list | grep -A 2 Active | tail -n 1 | awk '{print $2}' )
@@ -85,5 +115,5 @@ main()
   fi
 
 }
-
+set_defaults
 main
