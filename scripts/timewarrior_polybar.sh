@@ -4,12 +4,12 @@ function help()
 {
 	cat <<-EOF
 	Usage: $(basename "$0")
-	--not_long, -nl: Set color of msg for not long wasting/learning time
-	--long, -l: Set color of msg for long wasting/learning time
-	--too_long, -tl, -p: Set color of msg for too long wasting/learning time
-	--wasted_period, -wp, -u: Set the periodicity notifications while wasitng time
-  --learning_period, -lp, -u: Set the periodicity notifications during learning
-	--help, h: Display help
+	-nl, --not_long:        Set color of msg for not long wasting/learning time.
+	-l, --long:             Set color of msg for long wasting/learning time
+	-tl, --too_long:        Set color of msg for too long wasting/learning time
+	-wp, --wasted_period:   Set the periodicity notifications while wasitng time. Default 10 min.
+	-lp, --learning_period: Set the periodicity notifications during learning. Default 25 min.
+	-h, --help:             Display help
 	EOF
 }
 
@@ -24,8 +24,8 @@ function set_defaults()
 
 function parse_args()
 {
-    while (("$#")); do
-    case $1 in
+  for arg in "$@"; do
+    case $arg in
       --help|-h) help; exit 0;;
       --not_long|-nl) shift; NOT_LONG="$1" ;shift ;;
       --long|-l) shift; LONG="$1";shift  ;;
@@ -116,4 +116,5 @@ function main()
 
 }
 set_defaults
+parse_args "$@"
 main

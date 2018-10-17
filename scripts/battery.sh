@@ -1,13 +1,15 @@
-#! /bin/bash -x
+#! /bin/bash
 
-function help() {
+function help()
+{
   cat <<-EOF
 	Usage: $(basename "$0")
-	--max: Set maximum capacity. Default 80.
-	--min: Set minumum capacity. Default 40.
-	--plugin_color, -p: Set plugin color indicator in hex. Default #B11109.
-	--unplug_color, -u: Set unplug color indicator in hex. Default #1BEE76.
-	--help, h: Display help
+	--max:                 Set maximum capacity. Default 80%.
+	--min:                 Set minumum capacity. Default 40%.
+	-n, --notify_treshold: Set treshold for notify about plugin/unplug. Default 5%.
+	--plugin_color, -p:    Set plugin color indicator in hex. Default #B11109.
+	--unplug_color, -u:    Set unplug color indicator in hex. Default #1BEE76.
+	--help, h:             Display help
 	EOF
 }
 
@@ -15,6 +17,7 @@ function set_defaults()
 {
     MIN=40
     MAX=80
+    NOTIFY_TRESHOLD=5
     PLUGIN="#B11109"
     UNPLUG="#1BEE76"
     BATTERIES="/sys/class/power_supply/BAT*"
@@ -27,13 +30,14 @@ function is_correct_number()
 
 function parse_args()
 {
-    while (("$#")); do
+  while (("$#")); do
     case $1 in
-      --help|-h) help; exit 0;;
+      -h|--help) help; exit 0;;
       --max) shift; is_correct_number "$1" && MAX="$1" ;shift ;;
-      --min) shift; is_correct_number "$1" && MIN="$1";shift  ;;
-      --plugin_color|-p) shift; PLUGIN="$1"; shift ;;
-      --unplug_color|-u) shift; UNPLUG="$1"; shift ;;
+      --min) shift; is_correct_number "$1" && MIN="$1";shift ;;
+      -n|--notify_treshold) shift; is_correct_number "$1" && NOTIFY_TRESHOLD="$1";shift  ;;
+      -p|--plugin_color) shift; PLUGIN="$1"; shift ;;
+      -u|--unplug_color) shift; UNPLUG="$1"; shift ;;
       *)  echo "Unsupported command $1" >&2; help; exit 1 ;;
     esac
   done
@@ -47,12 +51,6 @@ function match_str()
 function is_charging()
 {
     grep Charging "${battery}"/status  > /dev/null 2>&1
-}
-
-function getActiveWindowID
-{
-    activeWinID=$(xprop -root _NET_ACTIVE_WINDOW | awk '{print $NF}')
-    echo "$activeWinID"
 }
 
 function notify_unplug()
@@ -70,13 +68,32 @@ function is_max_above_min()
   [[ $MAX -gt $MIN ]]
 }
 
-function is_battery_diff_5_percentage_since_last_notify()
+function is_integer()
 {
-  [[ -e /tmp/battery_level ]] || echo "$LEVEL" > /tmp/battery_level
+  [[ $1 =~ ^-?[0-9]+$ ]]
+}
+
+function battery_level_diff()
+{
   last_notify_battery_level="$(< /tmp/battery_level)"
-  diff_battery_level=$(( last_notify_battery_level - LEVEL ))
-  abs_diff_battery_level=${diff_battery_level#-}
-  [[ abs_diff_battery_level -ge 5 ]]
+  echo $(( last_notify_battery_level - LEVEL ))
+}
+
+function abs()
+{
+  is_integer "$1" && echo ${1#-} || { echo "$1 is not integer"; exit 1; }
+}
+
+function save_battery_level()
+{
+  echo "$LEVEL" > /tmp/battery_level
+}
+
+function is_treshold_exceeded()
+{
+  [[ -e /tmp/battery_level ]] || save_battery_level
+  diff="$(abs "$(battery_level_diff)")"
+  [[ $diff -ge $NOTIFY_TRESHOLD ]] && save_battery_level
 }
 
 function main()
@@ -87,15 +104,17 @@ function main()
 
   for battery in $BATTERIES; do
     LEVEL=$(< "$battery"/capacity)
+    is_treshold_exceeded || break;
+
     if [[ $LEVEL -lt $MIN ]] && ! is_charging ; then
-      is_battery_diff_5_percentage_since_last_notify && notify_plug && echo "$LEVEL" > /tmp/battery_level
+      notify_plug
     elif [[ $LEVEL -gt $MAX ]] && is_charging; then
-      is_battery_diff_5_percentage_since_last_notify && notify_unplug && echo "$LEVEL" > /tmp/battery_level
+      notify_unplug
     else
       echo " "
     fi
+
   done
 }
-
 
 main "$@"
