@@ -3,7 +3,7 @@
 DMENU='rofi -dmenu -i -theme sol -width 2300 -padding 270 -separator-style none -location 0 -lines 19 -bw 0'
 DIRS="/home/klemens/Documents/books /home/klemens/Downloads"
 
-input="$(find  $DIRS "*" | ag pdf | sed "s/.*\\///" |  $DMENU -p 'open: ')"
+input="$(find  $DIRS "*" | ag "pdf|epub" | sed "s/.*\\///" |  $DMENU -p 'open: ')"
 if [ "$input" != '' ]
 then
   path_book=$(find $DIRS -iname "$input")

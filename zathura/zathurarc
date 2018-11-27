@@ -18,3 +18,5 @@ set statusbar-bg "#2b2b2b"
 set statusbar-fg "#d5d2be"
 set recolor-lightcolor "#3f3f3f"
 set recolor-darkcolor "#d5d2be"
+
+set selection-clipboard clipboard

@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/bash
 
 function help()
 {
@@ -32,12 +32,12 @@ function parse_args()
 {
   while (("$#")); do
     case $1 in
-      -h|--help) help; exit 0;;
       --max) shift; is_correct_number "$1" && MAX="$1" ;shift ;;
       --min) shift; is_correct_number "$1" && MIN="$1";shift ;;
       -n|--notify_treshold) shift; is_correct_number "$1" && NOTIFY_TRESHOLD="$1";shift  ;;
       -p|--plugin_color) shift; PLUGIN="$1"; shift ;;
       -u|--unplug_color) shift; UNPLUG="$1"; shift ;;
+      -h|--help) help; exit 0;;
       *)  echo "Unsupported command $1" >&2; help; exit 1 ;;
     esac
   done
@@ -96,6 +96,14 @@ function is_treshold_reached()
   [[ $diff -ge $NOTIFY_TRESHOLD ]]
 }
 
+function handle_notify()
+{
+  if is_treshold_reached ;then
+    $1
+    save_battery_level
+  fi
+}
+
 function main()
 {
   set_defaults
@@ -105,9 +113,9 @@ function main()
   for battery in $BATTERIES; do
     LEVEL=$(< "$battery"/capacity)
     if [[ $LEVEL -lt $MIN ]] && ! is_charging ; then
-      is_treshold_reached && notify_plug && save_battery_level
+      handle_notify notify_plug
     elif [[ $LEVEL -gt $MAX ]] && is_charging; then
-      is_treshold_reached && notify_unplug && save_battery_level
+      handle_notify notify_unplug
     else
       echo " "
     fi

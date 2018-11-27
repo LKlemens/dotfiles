@@ -67,7 +67,7 @@ set noshowmode
 syntax sync minlines=256
 
 let g:python_host_prog = '/usr/bin/python2'
-let g:python3_host_prog = '/usr/bin/python'
+let g:python3_host_prog = '/usr/bin/python3'
 
 source $HOME/.config/nvim/plugins/hlnext.vim
 source $HOME/.config/nvim/plugins/a.vim
@@ -538,16 +538,29 @@ Plug 'beloglazov/vim-online-thesaurus' "OnlineThesaurusCurrentWord, Thesaurus wo
 Plug 'xuhdev/vim-latex-live-preview'
 Plug 'lervag/vimtex'
 Plug 'heavenshell/vim-pydocstring'
-Plug 'davidhalter/jedi-vim'
+" Plug 'davidhalter/jedi-vim'
 Plug 'zaluska/deoplete-rtags'
 Plug 'poppyschmo/deoplete-latex'
 Plug 'sedm0784/vim-you-autocorrect'
 Plug 'reedes/vim-pencil' "Pencil , SoftPencil
+" Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
+" Plug 'kristijanhusak/deoplete-phpactor'
+" Plug 'lvht/phpcd.vim', { 'for': 'php', 'do': 'composer install' }
+Plug 'StanAngeloff/php.vim'
+
+" Include Phpactor
+Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
+
+" Require ncm2 and this plugin
+" Plug 'ncm2/ncm2'
+" Plug 'roxma/nvim-yarp'
+" Plug 'phpactor/ncm2-phpactor'
+Plug 'kristijanhusak/deoplete-phpactor'
 " Plug 'autozimu/LanguageClient-neovim', {
 "     \ 'branch': 'next',
 "     \ 'do': 'bash install.sh',
 "     \ }
-" NeoBundle 'movitto/vim-vsearch'    "moze sie przydac
+" NeoBundle 'movitto/vim-vsearch'
 call plug#end()            " required
 " }}}
 "Plugins settings {{{
@@ -556,6 +569,7 @@ let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
 let g:deoplete#sources#clang#clang_header = '/usr/lib/clang'
 let g:deoplete#sources#jedi#show_docstring = 1
+let g:deoplete#sources#jedi#python_path = '/usr/bin/python'
 " let g:deoplete#sources#clang#clang_complete_database='/home/klemens/studia/cpp/tree'
 " let g:deoplete#sources#asm#go_mode=1
 " }}}
@@ -585,15 +599,16 @@ let g:ale_linters = {
       \   'c': ['gcc'],
       \   'java': ['javac'],
       \   'javascript': ['eslint', 'jshint'],
-      \   'python': ['yapf', 'isort', 'flake8',],
+      \   'python': ['yapf', 'isort', 'flake8', 'pylint'],
       \}
 
-let g:ale_python_flake8_executable = 'python2'   " or 'python' for Python 2
+let g:ale_python_flake8_executable = 'python'   " or 'python' for Python 2
 let g:ale_python_flake8_options = '-m flake8'
 
 let g:ale_fixers = {
-      \   'python': ['autopep8', 'isort', 'docformatter', 'yapf',],
-      \   'cpp': ['clang-format']
+      \   'python': ['autopep8', 'isort', 'docformatter', 'yapf', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+      \   'cpp': ['clang-format'],
+      \   'php': ['php_cs_fixer', 'remove_trailing_lines', 'trim_whitespace']
       \}
 let g:autoflake_imports='django,requests,urllib3,numpy,scipy,sklearn,pandas,tensorflow'
 let g:ale_cpp_cppcheck_options='--enable=warning,style,performance,information,missingInclude'
@@ -672,11 +687,9 @@ augroup _fzf
 augroup END
 
 "FZF
-" let g:fzf_files_options =
-"             \ '--preview "highlight -q --force -O ansi /opt/python-pygments/noarch/2.2.0.p360-1/bin/pygmentize {} || cat {}"'
-" let g:fzf_files_options =
-"    \ '--preview "(/opt/python-pygments/noarch/2.2.0.p360-1/bin/pygmentize {} || cat {}) 2> /dev/null " "| head -'.&lines.'"'
+let g:fzf_files_options ='--preview "rougify {2..-1} | head -'.&lines.'"'
 " Files with preview
+
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right', '?'), <bang>0)
 
@@ -695,7 +708,6 @@ command! -nargs=* -complete=dir Cd call fzf#run(fzf#wrap(
 let g:fzf_history_dir = '$HOME/.local/share/fzf-history'
 let g:fzf_buffers_jump = 1
 let g:fzf_layout = { 'down': '~100%' }
-
 
 "end fzf
 " notational fzf
@@ -788,6 +800,16 @@ augroup cpp
 augroup END
 " }}}
 "
+"phpcd {{{
+let g:deoplete#sources = {}
+let g:deoplete#sources.php = ['omni', 'phpactor', 'ultisnips', 'buffer']
+"
+" let g:deoplete#ignore_sources = get(g:, 'deoplete#ignore_sources', {})
+" let g:deoplete#ignore_sources.php = ['omni']
+"
+" autocmd BufEnter *.php call ncm2#enable_for_buffer()
+" set completeopt=noinsert,menuone,noselect
+"}}}
 "pencil {{{
 augroup pencil
   autocmd!
@@ -797,6 +819,8 @@ augroup pencil
                             \ | call textobj#quote#init()
                             \ | call textobj#sentence#init()
 augroup END
+
+let g:pencil#textwidth = 74
 "}}}
 "latex {{{
 let g:livepreview_previewer = 'okular'
@@ -1211,23 +1235,23 @@ let g:mwDefaultHighlightingNum = 15
 "}}}
 "}}}
 "python {{{
-noremap <leader>rp :!python2 %
+noremap <leader>rp :!python %
 "}}}
-"eclim {{{
-nnoremap   <leader>i :JavaImportOrganize<cr>
-nnoremap   <leader>d :JavaDocSearch <cr>
-nnoremap   <leader>js :JavaSearch <cr>
-nnoremap   <leader>jf :%JavaFormat<cr>
-nnoremap   <leader>jc :JavaCorrect<cr>
-nnoremap   <leader>jim :JavaImpl<cr>
-"
-"
-let g:EclimCompletionMethod = 'omnifunc'
-" let g:SuperTabDefaultCompletionType = 'context'
-let g:EclimJavaSearchSingleResult='vsplit'
-let g:EclimCValidate = 0
-let g:EclimJavaValidate = 0
-"}}}
+""eclim {{{
+"nnoremap   <leader>i :JavaImportOrganize<cr>
+"nnoremap   <leader>d :JavaDocSearch <cr>
+"nnoremap   <leader>js :JavaSearch <cr>
+"nnoremap   <leader>jf :%JavaFormat<cr>
+"nnoremap   <leader>jc :JavaCorrect<cr>
+"nnoremap   <leader>jim :JavaImpl<cr>
+""
+""
+"let g:EclimCompletionMethod = 'omnifunc'
+"" let g:SuperTabDefaultCompletionType = 'context'
+"let g:EclimJavaSearchSingleResult='vsplit'
+"let g:EclimCValidate = 0
+"let g:EclimJavaValidate = 0
+""}}}
 "my functions {{{
 "add semicolon on the end function {{{
 nnoremap ,; :call ToggleEndChar(';')<CR>
@@ -1251,16 +1275,44 @@ function! CopyPath()
   let @+=expand('%:p')
 endfunction
 
-" function! TransWordd()
-"   if g:numerOfColl > 2
-"     let g:numerOfColl=1
-"   else
-"     let g:numerOfColl=g:numerOfColl+1
-"   endif
-
-"   normal let g:dziwne = <c-r><c-w><cr>
-"   normal :!echo $(trans -b -p <c-r><c-w>) >> $HOME/Documents/unknown.txt<cr>
-"   normal :!echo $(tail -n 1 $HOME/Documents/unknown.txt) $(trans -b en:pl <c-r><c-w>) >> $HOME/Documents/unknown.txt<cr>
-" endfunction
 "}}}
+
+function! DocumentSourceCode()
+  function! s:InsertPythonData()
+    let l:filename = expand('%:r')
+    let l:shebang = '#!/usr/bin/env python'
+    let l:encoding = '# -*- coding: utf-8 -*-'
+    let l:module_doc = '""" Module documentation for: ' . l:filename . '."""'
+
+    if (getline('1') !~ l:shebang)
+      exec 'normal!ggO' . l:shebang
+      exec 'normal!o' . l:encoding
+      exec 'normal!o' . l:module_doc
+    endif
+  endfunction
+
+  function! s:DocumentFunctionsClasses()
+    let l:current_line = line('.')
+
+    for l:line in range(1, line('$'))
+      let l:is_class_or_function = matchstr(getline(l:line), '^\s*\(def\|class\)')
+      if(!empty(l:is_class_or_function))
+        let l:inserted_docstring = matchstr(getline(l:line+1), '"""')
+        if(empty(l:inserted_docstring))
+          execute l:line
+          execute ':Pydocstring'
+        endif
+    endif
+    endfor
+
+    execute l:current_line
+  endfunction
+
+  call s:InsertPythonData()
+  call s:DocumentFunctionsClasses()
+endfunction
+
+
+autocmd Filetype python nnoremap <silent><Leader>d :Pydocstring<CR>
+autocmd Filetype python nnoremap <silent><Leader>D :call DocumentSourceCode()<CR>
 " }}}

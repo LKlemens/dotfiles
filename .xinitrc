@@ -68,7 +68,7 @@ exec dunst -no-startup-id&
 # lightsOn.sh 500&
 termite --class=Upgrade --hold -e " bash -c \"tmux attach || tmux\""&
 pgrep caffeine &> /dev/null || caffeine &> /dev/null &
-signal-desktop&
+#signal-desktop&
 # pgrep xautolock &> /dev/null || xautolock -locker 'better2 -l dim'&
 # pgrep xautolock &> /dev/null || xautolock -locker 'i3lock -i ~/.cache/i3lock/current/l_dim.png -u'&
 xidlehook \
@@ -79,7 +79,7 @@ xidlehook \
   --not-when-fullscreen \
   --not-when-audio &
 eval "$(ssh-agent -s)"
-spotify &
+#spotify &
 pgrep redshift &> /dev/null || redshift &> /dev/null &
 exec i3
 

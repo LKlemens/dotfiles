@@ -154,11 +154,16 @@ fshow() {
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
       --preview 'f() { set -- $(echo -- "$@" | grep -o "[a-f0-9]\{7\}"); [ $# -eq 0 ] || git show --color=always $1; }; f {}' \
+      --bind "ctrl-y:execute:
+                (grep -o '[a-f0-9]\{7\}' | head -1 | xclip) << 'FZF-EOF'
+                {}
+FZF-EOF" \
       --bind "ctrl-m:execute:
                 (grep -o '[a-f0-9]\{7\}' | head -1 |
                 xargs -I % sh -c 'git show --color=always % | less -R') << 'FZF-EOF'
                 {}
 FZF-EOF"
+
 }
 
 pbin() {

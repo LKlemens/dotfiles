@@ -9,8 +9,8 @@ function help()
 	-tl, --too_long:        Set color of msg for too long wasting/learning time
 	-wp, --wasted_period:   Set the periodicity notifications while wasitng time. Default 10 min.
 	-lp, --learning_period: Set the periodicity notifications during learning. Default 25 min.
-  -f, --first_level:      Set value in min for first level of learning/wasting time. Default 5 min.
-  -s, --second_level:     Set value in min for second level of learning/wasting time. Default 25 min.
+	-f, --first_level:      Set value in min for first level of learning/wasting time. Default 5 min.
+	-s, --second_level:     Set value in min for second level of learning/wasting time. Default 25 min.
 	-h, --help:             Display help
 	EOF
 }
@@ -29,9 +29,7 @@ function set_defaults()
 function parse_args()
 {
   while (( $# )) ; do
-    echo jetstm
     case "$1" in
-      --help|-h) help; exit 0;;
       --not_long|-nl) shift; NOT_LONG="$1" ;shift ;;
       --long|-l) shift; LONG="$1";shift  ;;
       --too_long,-tl|-p) shift; TOO_LONG="$1"; shift ;;
@@ -39,6 +37,7 @@ function parse_args()
       --learning_period|-lp) shift; LEARNING_PERIOD="$1"; shift ;;
       --first_level|-f) shift; FIRST_LEVEL="$1"; shift ;;
       --second_level|-s) shift; SECOND_LEVEL="$1"; shift ;;
+      --help|-h) help; exit 0;;
       *)  echo "Unsupported command $1" >&2; help; exit 1 ;;
     esac
   done
@@ -63,9 +62,10 @@ function get_last_notify_date()
 
 function set_notify_period()
 {
-  notify_period_in_sec=$WASTED_PERIOD
   if [[ $notify_sender_msg =~ "You are learning" ]]; then
     notify_period_in_sec=$LEARNING_PERIOD
+  else
+    notify_period_in_sec=$WASTED_PERIOD
   fi
 }
 
@@ -168,7 +168,7 @@ function main()
 
     echo_msg  $wasted_time_min \
               "  $wasted_hours_msg $wasted_min_msg"\
-              "What wrong with you? $wasted_time_min min was wasted"
+              "What's wrong with you? $wasted_time_min min was wasted"
   fi
 
 }

@@ -85,6 +85,8 @@ bindsym XF86Vedeo exec $HOME/.config/scripts/workflows
 bindsym $mod+h  focus left
 bindsym $mod+j workspace prev
 bindsym $mod+k workspace next
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
 bindsym $mod+l  focus right
 
 # alternatively, you can use the cursor keys:
@@ -216,6 +218,7 @@ bindsym XF86AudioPlay exec spotify-cli --playpause
 bindsym --release Control+Print exec scrot -s  -e 'mv $f ~/screens/'
 bindsym --release Control+F12 exec scrot -u -e 'mv $f ~/screens'
 new_window normal 0 px
+for_window [class="^.*"] border pixel 1
 
 # Show the first scratchpad window
 bindsym $mod+minus scratchpad show
