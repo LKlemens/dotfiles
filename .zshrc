@@ -122,6 +122,7 @@ alias el='e --servername VIM'
 alias gascii="curl -F c=@term.json https://ptpb.pw/"
 alias tep="trans en:pl"
 alias tpe="trans pl:en"
+alias pkra="curl wttr.in/Krakow?m"
 
 
 
@@ -167,7 +168,7 @@ FZF-EOF"
 }
 
 pbin() {
-"$@" | curl -F c=@- https://ptpb.pw/
+"$@" | curl -F c=@- https://0x0.st
 }
 
 
@@ -184,3 +185,92 @@ source $HOME/.config/scripts/fzfMarks.fzf
 source $HOME/.config/aliasTip/alias-tips.plugin.zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+function st() {
+  id=$(task list | awk -v name="$1" 'match($0, name) {print $1}');
+  if [[ -n $id ]]; then
+    task start $id;
+    echo "$id $name";
+  else
+    echo "failed";
+  fi
+}
+
+#function tc() { out=$(trans en:pl $1); h=$(echo $out | head -n 3); t=$(echo $out | tail -n 1); echo $h | xclip -sel clip; echo $t | xclip -sel primary; xclip -o }
+
+function tc () {
+        out=$(trans en:pl "$1" -speak -download-audio-as "$1".mp3)
+        header=($(echo "$out" | head -n 3))
+        transaltion=$(echo "$out" | tail -n 1)
+        echo "${header[1]}"
+        echo "${header[2]}"
+        echo "$transaltion"
+        read  "?Do you want create flashcard?[y/n]:?"
+        if [[ $REPLY == 'y' ]];then
+          sed  -e "s#frontpage#${header[1]}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${1}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
+          sed  -e "s#backpage#${header[1]}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${1}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
+          mv ${1}.mp3 /home/klemens/.local/share/Anki2/User\ 1/collection.media/
+        else
+          rm ${1}.mp3
+        fi;
+
+}
+
+function podcasts()
+{
+  cd "$HOME"/Documents/podcasts || exit
+  for i in {1..10}; do
+    link=$(head -1 links)
+    wget "$(wget -O - "$link" | grep "\.mp3" | sed -e 's/.*\(http.*\.mp3\).*/\1/'| head -1)"
+    sed -i '1d' links
+  done
+  cd -
+}
+
+function sd() { sdcv "$1" | less }
+rawurlencode() {
+  local string="${1}"
+  local strlen=${#string}
+  local encoded=""
+  local pos c o
+
+  for (( pos=0 ; pos<strlen ; pos++ )); do
+     c=${string:$pos:1}
+     case "$c" in
+        [-_.~a-zA-Z0-9] ) o="${c}" ;;
+        * )               printf -v o '%%%02x' "'$c"
+     esac
+     encoded+="${o}"
+  done
+  echo "${encoded}"    # You can either set a return variable (FASTER)
+  REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
+}
+function pv() { echo $1 | xclip -sel clip; url="https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode "$1")"; echo $url; lynx -dump https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode "$1") | grep -m 1 -A 10 "phrasal verb$" | sed -r -e 's/\[[0-9]+\]//g' -e 's/\///g' -e '/Czasowniki/d' | awk '{ if ( NF > 1) { print $0  } else { exit }; }' | xclip -sel primary; xclip -o }
+
+function onlyp() { lynx -dump https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode $1) | grep "[0-9]\." | grep -v http | sed -e 's/\///g' -e 's/[0-9]\.*//g' -e 's/\[\]//g' -e 's/(.*//g'| paste -sd',' | sed -r -e 's/\s{2}+//g' | cut -d',' -f 1-6  }
+
+function ts() { timew summary "b\"$1\"" }
+
+
+
+
+
+
+db() {
+  mpath='/home/klemens/watch'
+  movies=($mpath/*.ts)
+  echo "playing ${movies[1]}"
+  xdotool key Super+3
+  sleep 0.2
+  mpv --fullscreen --start=00:03:20 "${movies[1]}"
+  mv "${movies[1]}" "$mpath/trash"
+  mv "${movies[1]%.*}.srt"  "$mpath/trash"
+  if [[ (( ${#movies} < 6 )) ]]; then
+    notify-send "$((${#movies} - 1)) movies left !!!"
+  fi
+  xdotool key Super+1
+}
