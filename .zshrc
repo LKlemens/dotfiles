@@ -203,19 +203,27 @@ function st() {
 #function tc() { out=$(trans en:pl $1); h=$(echo $out | head -n 3); t=$(echo $out | tail -n 1); echo $h | xclip -sel clip; echo $t | xclip -sel primary; xclip -o }
 
 function tc () {
-        out=$(trans en:pl "$1" -speak -download-audio-as "$1".mp3)
+        eng_word="$1"
+        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "${eng_word}.mp3")
         header=($(echo "$out" | head -n 3))
         transaltion=$(echo "$out" | tail -n 1)
-        echo "${header[1]}"
+        echo "$eng_word"
+        if ! [[ ${header[2]} =~ "/" ]];then
+          header[2]='';
+        fi
         echo "${header[2]}"
         echo "$transaltion"
+        if grep -o -q "$eng_word" /home/klemens/Documents/eng/mine.txt; then
+          echo "That word is stored already"
+          return 0
+        fi
         read  "?Do you want create flashcard?[y/n]:?"
         if [[ $REPLY == 'y' ]];then
-          sed  -e "s#frontpage#${header[1]}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${1}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
-          sed  -e "s#backpage#${header[1]}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${1}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
-          mv ${1}.mp3 /home/klemens/.local/share/Anki2/User\ 1/collection.media/
+          sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
+          sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
+          mv ${eng_word}.mp3 /home/klemens/.local/share/Anki2/User\ 1/collection.media/
         else
-          rm ${1}.mp3
+          rm ${eng_word}.mp3
         fi;
 
 }
