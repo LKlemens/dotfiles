@@ -2,7 +2,8 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/klemens/.oh-my-zsh
+export ZSH=/home/klemens/.oh-my-zsh
+export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -122,7 +123,8 @@ alias el='e --servername VIM'
 alias gascii="curl -F c=@term.json https://ptpb.pw/"
 alias tep="trans en:pl"
 alias tpe="trans pl:en"
-alias pkra="curl wttr.in/Krakow?m"
+alias pkra="curl wttr.in/Krakow"
+alias pzak="curl wttr.in/Zakopane"
 
 
 
@@ -204,7 +206,13 @@ function st() {
 
 function tc () {
         eng_word="$1"
-        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "${eng_word}.mp3")
+        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "/home/klemens/${eng_word}.mp3")
+        if [[ -z $2 ]]; then
+          pathfile="/home/klemens/Documents/eng/mine.txt"
+        else
+          pathfile="/home/klemens/Documents/eng/book.txt"
+        fi
+
         header=($(echo "$out" | head -n 3))
         transaltion=$(echo "$out" | tail -n 1)
         echo "$eng_word"
@@ -212,20 +220,36 @@ function tc () {
           header[2]='';
         fi
         echo "${header[2]}"
+        transaltion=$(echo $transaltion | sed "s/\b$eng_word\b//I")
         echo "$transaltion"
-        if grep -o -q "$eng_word" /home/klemens/Documents/eng/mine.txt; then
+        if grep -w -o -q "$eng_word" $pathfile; then
           echo "That word is stored already"
+          rm /home/klemens/${eng_word}.mp3
           return 0
         fi
         read  "?Do you want create flashcard?[y/n]:?"
         if [[ $REPLY == 'y' ]];then
-          sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
-          sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> /home/klemens/Documents/eng/mine.txt
-          mv ${eng_word}.mp3 /home/klemens/.local/share/Anki2/User\ 1/collection.media/
+          sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> $pathfile
+          sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> $pathfile
+          mv /home/klemens/${eng_word}.mp3  /home/klemens/.local/share/Anki2/User\ 1/collection.media/
         else
-          rm ${eng_word}.mp3
+          rm /home/klemens/${eng_word}.mp3
         fi;
 
+}
+
+function btc(){
+  tc $1 1
+}
+
+function category()
+{
+  cd "$HOME"/Documents/category || exit
+  link=$(head -1 links)
+  echo $link
+  youtube-dl $link
+  sed -i '1d' links
+  cd -
 }
 
 function podcasts()
@@ -233,9 +257,9 @@ function podcasts()
   cd "$HOME"/Documents/podcasts || exit
   for i in {1..10}; do
     link=$(head -1 links)
-    wget "$(wget -O - "$link" | grep "\.mp3" | sed -e 's/.*\(http.*\.mp3\).*/\1/'| head -1)"
     sed -i '1d' links
-  done
+    echo "$(wget -O - "$link" | grep "\.mp3" | sed -e 's/.*\(http.*\.mp3\).*/\1/'| head -1)"
+  done | xargs -I{} -P10 sh -c "wget {}"
   cd -
 }
 
@@ -267,6 +291,18 @@ function ts() { timew summary "b\"$1\"" }
 
 
 
+function elmo(){
+  js="elm.js"
+  min="elm.min.js"
+
+  elm make --optimize --output=$js $@
+
+  uglifyjs $js --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe" | uglifyjs --mangle --output=$min
+
+  echo "Initial size: $(cat $js | wc -c) bytes  ($js)"
+  echo "Minified size:$(cat $min | wc -c) bytes  ($min)"
+  echo "Gzipped size: $(cat $min | gzip -c | wc -c) bytes"
+}
 
 db() {
   mpath='/home/klemens/watch'
@@ -282,3 +318,4 @@ db() {
   fi
   xdotool key Super+1
 }
+source ~/git/elm-sh-completion/elm-completion.sh

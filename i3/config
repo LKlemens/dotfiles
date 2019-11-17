@@ -14,7 +14,7 @@ mouse_warping none
 workspace_auto_back_and_forth yes
 # sticky no
 
-assign [class="Firefox"] 
+assign [class="firefox"] 
 assign [class="Termite"] 
 assign [class="Chromium"] 
 assign [class="XMind"] 
@@ -23,7 +23,8 @@ assign [class="Vivaldi"] 
 assign [class="Vivado"] 
 assign [class="Writer"] 
 assign [class="Okular"] 
-assign [class="Kodi"] 
+assign [class="mpv"] 
+assign [class="Thunderbird"] 
 #assign [class="Spotify"] 
 for_window [class="Spotify"] move to workspace 
 for_window [class="Thunderbird"] move to workspace 
@@ -64,7 +65,8 @@ bindsym $mod+q kill
 #lock window
 # bindsym $mod+Shift+x exec "/home/reed/.config/i3/lock.sh --pixelate   "
 bindsym $mod+p exec /home/klemens/.config/scripts/scrot.sh
-bindsym $mod+Shift+x exec "task stop $(cat /tmp/taskid); ~/.config/scripts/better2 -l dim"
+
+bindsym $mod+Shift+x exec "task stop $(cat /tmp/taskid); i3lock -i ~/Documents/archwall.png -u"
 bindsym $mod+End exec --no-startup-id "systemctl suspend"
 # start rofi (a program launcher)
 # bindsym $mod+d exec rofi -show run -location 1 -sidebar-mode -lines 3 -eh 2 -width 100 -padding 310 -opacity 70 -kb-row-select "Tab" -kb-row-tab "" -hide-scrollbar  -lines 2 -line-margin 0 -line-padding 1 -separator-style none -font "mono 10" -columns 9 -bw 0
@@ -72,7 +74,7 @@ bindsym $mod+d exec rofi -show run -display-run "run: " -theme sol -width 2000 -
 bindsym $mod+s exec $HOME/.config/scripts/rofis
 bindsym $mod+c exec $HOME/.config/scripts/rofiwifi
 bindsym $mod+x exec $HOME/.config/scripts/rofi-find
-bindsym $mod+Shift+p exec keepmenu
+bindsym $mod+Shift+p exec ~/git/rofi-passwords/src/__init__.py
 bindsym XF86Vedeo exec $HOME/.config/scripts/workflows
 
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -233,6 +235,7 @@ for_window [class="Spotify"] mark "music", move scratchpad
 
 bindsym $mod+Shift+n [con_mark="messenger-client"] scratchpad show
 for_window [title="Signal"] mark "messenger-client", move scratchpad
+for_window [title="Slack"] mark "messenger-client", move scratchpad
 
 bindsym $mod+Shift+b [con_mark="mail"] scratchpad show
 for_window [class="Inboxer"] mark "mail", move scratchpad

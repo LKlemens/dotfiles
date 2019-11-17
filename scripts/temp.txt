@@ -1,0 +1,10 @@
+Experienced in developing Linux programs.
+Provide support on weekends and analyze, resolve software problems.
+Proficiency at command line.
+Knowledge of common scripting languages and configuration management
+tools. Solved configuration/installation problems various tools.
+Troubleshooting on remote server via ssh. Cooperated with administrative
+staff to solve configuration tools problems. Automated part of tasks using
+shell scripting. Worked at scrum metodology. Delivered tools for remote
+work team.
+

@@ -73,7 +73,7 @@ pgrep caffeine &> /dev/null || caffeine &> /dev/null &
 # pgrep xautolock &> /dev/null || xautolock -locker 'i3lock -i ~/.cache/i3lock/current/l_dim.png -u'&
 xidlehook \
   --time 5 \
-  --timer 'task stop $(cat /tmp/taskid); i3lock -i $HOME/Documents/archwall.png -u' \
+  --timer 'task stop $(cat /tmp/taskid); i3lock -i /home/klemens/Documents/archwall.png -u' \
   --notify 3 \
   --notifier  'xrandr --output "$(xrandr | grep primary | cut -d " " -f 1)" --brightness .1' \
   --not-when-fullscreen \

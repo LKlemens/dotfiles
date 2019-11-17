@@ -153,7 +153,7 @@ function main()
 
   if [[ $(task list | grep Active) ]]; then
     time_on_learning=$(get_time_on_learning)
-    task_name=$( task list | grep -A 2 Active | tail -n 1 | awk '{print $2" "$5}' )
+    task_name=$( task list | grep -A 2 Active | tail -n 1 | awk '{print $2" "$(NF-1)}' )
 
     echo_msg "${time_on_learning%%[a-z]*}" \
              "  $task_name"\

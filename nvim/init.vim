@@ -69,10 +69,10 @@ syntax sync minlines=256
 let g:python_host_prog = '/usr/bin/python2'
 let g:python3_host_prog = '/usr/bin/python3'
 
-source $HOME/.config/nvim/plugins/hlnext.vim
+" source $HOME/.config/nvim/plugins/hlnext.vim
 source $HOME/.config/nvim/plugins/a.vim
 
-let &path.='/usr/bin/xclip,/usr/include/c++/6.3.1'
+let &path.='/usr/bin/xclip,/usr/include/c++/6.3.1,/usr/local/include/botan-2'
 " }}}
 " MOVEMENTS {{{
 " "#################################
@@ -399,7 +399,7 @@ Plug 'eapache/rainbow_parentheses.vim'
 
 " Plug 'simnalamburt/vim-mundo' "version control in vim
 Plug 'mbbill/undotree'
-Plug 'SirVer/ultisnips' "snippets
+"Plug 'SirVer/ultisnips' "snippets
 Plug 'honza/vim-snippets'
 Plug 'jiangmiao/auto-pairs'
 Plug 'Shougo/neoyank.vim'
@@ -493,14 +493,15 @@ Plug 'tenfyzhong/axring.vim' " ax enhancement c-a c-x
 " Plug 'pbrisbin/vim-mkdir'
 " Plug 'maralla/completor.vim'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'zchee/deoplete-jedi'
-" Plug 'zchee/deoplete-clang'
+" Plug 'zchee/deoplete-jedi'
+Plug 'zchee/deoplete-clang'
 " Plug 'zchee/deoplete-asm'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'tenfyzhong/CompleteParameter.vim'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'lilydjwg/colorizer' " colorized hex
+"Plug 'lilydjwg/colorizer' " colorized hex
+Plug 'chrisbra/Colorizer'
 Plug 'fs111/pydoc.vim' " "
 Plug 'edkolev/tmuxline.vim'
 "Displays git changes
@@ -538,11 +539,12 @@ Plug 'beloglazov/vim-online-thesaurus' "OnlineThesaurusCurrentWord, Thesaurus wo
 Plug 'xuhdev/vim-latex-live-preview'
 Plug 'lervag/vimtex'
 Plug 'heavenshell/vim-pydocstring'
-" Plug 'davidhalter/jedi-vim'
+Plug 'davidhalter/jedi-vim'
 Plug 'zaluska/deoplete-rtags'
 Plug 'poppyschmo/deoplete-latex'
 Plug 'sedm0784/vim-you-autocorrect'
 Plug 'reedes/vim-pencil' "Pencil , SoftPencil
+" Plug 'tmsvg/pear-tree'
 " Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 " Plug 'kristijanhusak/deoplete-phpactor'
 " Plug 'lvht/phpcd.vim', { 'for': 'php', 'do': 'composer install' }
@@ -570,6 +572,8 @@ let g:deoplete#sources#clang#libclang_path = '/usr/lib/libclang.so'
 let g:deoplete#sources#clang#clang_header = '/usr/lib/clang'
 let g:deoplete#sources#jedi#show_docstring = 1
 let g:deoplete#sources#jedi#python_path = '/usr/bin/python'
+let g:deoplete#sources#clang#flags = ['-x', 'c++', '-I/usr/include/botan-2/']
+" let g:jedi#force_py_version = 2
 " let g:deoplete#sources#clang#clang_complete_database='/home/klemens/studia/cpp/tree'
 " let g:deoplete#sources#asm#go_mode=1
 " }}}
@@ -595,11 +599,14 @@ let g:deoplete#sources#jedi#python_path = '/usr/bin/python'
 " function! s:autoflake(buffer):
 " endfunction
 " \   'cpp': ['cppcheck', 'clangtidy'],
+" \   'elixir' : ['credo', 'dialyxir', 'sobelow'],
 let g:ale_linters = {
       \   'c': ['gcc'],
       \   'java': ['javac'],
-      \   'javascript': ['eslint', 'jshint'],
+      \   'javascript': ['eslint', 'jshint', 'flow', 'tsserver'],
       \   'python': ['yapf', 'isort', 'flake8', 'pylint'],
+      \   'elm': ['make'],
+      \   'elixir' : ['credo', 'mix'],
       \}
 
 let g:ale_python_flake8_executable = 'python'   " or 'python' for Python 2
@@ -608,13 +615,17 @@ let g:ale_python_flake8_options = '-m flake8'
 let g:ale_fixers = {
       \   'python': ['autopep8', 'isort', 'docformatter', 'yapf', 'black', 'remove_trailing_lines', 'trim_whitespace'],
       \   'cpp': ['clang-format'],
-      \   'php': ['php_cs_fixer', 'remove_trailing_lines', 'trim_whitespace']
+      \   'javascript': ['prettier'],
+      \   'php': ['php_cs_fixer', 'remove_trailing_lines', 'trim_whitespace'],
+      \   'elm': ['elm-format'],
+      \   'elixir': ['mix_format'],
       \}
-let g:autoflake_imports='django,requests,urllib3,numpy,scipy,sklearn,pandas,tensorflow'
+let g:autoflake_imports='bs4,twisted,django,requests,urllib3,numpy,scipy,sklearn,pandas,tensorflow'
 let g:ale_cpp_cppcheck_options='--enable=warning,style,performance,information,missingInclude'
 let g:ale_cpp_clangtidy_options='-checks=*'
 let g:ale_cpp_clangtidy_options='-std=c++11'
 let g:ale_c_clangformat_options='-style=Google'
+let g:ale_cpp_clang_options = '-std=c++14 -Wall -I/usr/include/botan-2/'
 
 let g:ale_sign_error = ''
 let g:ale_sign_warning = ''
@@ -1004,8 +1015,8 @@ augroup END
 "anzu , nN search {{{
 " ========================================================================================
 " set middle of screen for new searches
-nmap n :call HLNext()<cr><Plug>(anzu-n-with-echo)zz
-nmap N :call HLNext()<cr><Plug>(anzu-N-with-echo)zz
+nmap n :<Plug>(anzu-n-with-echo)zz
+nmap N :<Plug>(anzu-N-with-echo)zz
 " statusline
 set statusline+=%{anzu#search_status()}
 " }}}
