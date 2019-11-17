@@ -141,7 +141,6 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .svn -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 bindkey  -s '^p' 'files=$(fzf) && [[ $files ]] && nvim -p $files^M'
 FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
