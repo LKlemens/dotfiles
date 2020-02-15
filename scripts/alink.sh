@@ -60,17 +60,16 @@ function create_links ()
   list_of_configs=$1
   config_path=$2
   for config in $list_of_configs;do
-    if ! [[ -h  "$config_path/$config" ]]; then
+    if ! [[ -h  "$config_path/$config" ]] && [[ -s "$config_path/$config" ]]; then
       cp -r -L -u "$config_path/$config" "$HOME/.config/backup_alist"
       rm -rf "${config_path:?}/$config"
-      local new_file_added=$(if_new_file_add_to_git_first "$config" "$config_path")
+    fi
+    if ! [[ -h  "$config_path/$config" ]];then
+      if_new_file_add_to_git_first "$config" "$config_path"
       ln -s "${config[path_to_git_dir]}/$config" "$config_path/$config"
+      echo "new symlink $config_path/$config -> ${config[path_to_git_dir]}/$config"
     fi
   done
-
-  if [ $new_file_added ~='*was added*'  ]; then
-    echo "nothing change in $config_path"
-  fi
 }
 
 function if_new_file_add_to_git_first()
