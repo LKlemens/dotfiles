@@ -30,6 +30,7 @@ ZSH_THEME="agnoster"
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
 export TERM=xterm-256color
+export TASKDDATA=/var/taskd
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -141,7 +142,7 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .svn -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
-bindkey  -s '^p' 'files=$(fzf) && [[ $files ]] && nvim -p $files^M'
+bindkey  -s '^p' 'files=$(fzf) && [[ $files ]] && nvim -p $(echo $files | paste -sd" ")^M'
 FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
 

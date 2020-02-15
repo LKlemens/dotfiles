@@ -380,6 +380,97 @@ cnoreabbrev ml MarkLoad LOGI
 cnoreabbrev mss MarkSave
 cnoreabbrev rev !/usr/bin/svn up  %:p
 " }}}
+" {{{ coc
+"
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+" inoremap <silent><expr> <TAB>
+"       \ pumvisible() ? "\<C-n>" :
+"       \ <SID>check_back_space() ? "\<TAB>" :
+"       \ coc#refresh()
+" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+" }}}
 "Plug-vim {{{
 filetype off                  " required
 call plug#begin()
@@ -492,9 +583,9 @@ Plug 'tenfyzhong/axring.vim' " ax enhancement c-a c-x
 " Plug 'kshenoy/vim-signature' " Plugin to toggle, display and navigate marks
 " Plug 'pbrisbin/vim-mkdir'
 " Plug 'maralla/completor.vim'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 " Plug 'zchee/deoplete-jedi'
-Plug 'zchee/deoplete-clang'
+" Plug 'zchee/deoplete-clang'
 " Plug 'zchee/deoplete-asm'
 Plug 'Shougo/neoinclude.vim'
 Plug 'Shougo/echodoc.vim'
@@ -502,14 +593,14 @@ Plug 'tenfyzhong/CompleteParameter.vim'
 Plug 'christoomey/vim-tmux-navigator'
 "Plug 'lilydjwg/colorizer' " colorized hex
 Plug 'chrisbra/Colorizer'
-Plug 'fs111/pydoc.vim' " "
+" Plug 'fs111/pydoc.vim' " "
 Plug 'edkolev/tmuxline.vim'
 "Displays git changes
 Plug 'airblade/vim-gitgutter'
 " Plug 'ryanoasis/vim-devicons'
 Plug 'Chiel92/vim-autoformat'
 Plug 'justinmk/vim-dirvish'
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 Plug 'maximbaz/lightline-ale'
 Plug 'rhysd/committia.vim' " more pleasant git commit
 Plug 'tell-k/vim-autoflake'
@@ -538,26 +629,33 @@ Plug 'rhysd/vim-grammarous' " GrammarousCheck
 Plug 'beloglazov/vim-online-thesaurus' "OnlineThesaurusCurrentWord, Thesaurus word ,K
 Plug 'xuhdev/vim-latex-live-preview'
 Plug 'lervag/vimtex'
-Plug 'heavenshell/vim-pydocstring'
-Plug 'davidhalter/jedi-vim'
-Plug 'zaluska/deoplete-rtags'
-Plug 'poppyschmo/deoplete-latex'
+" Plug 'heavenshell/vim-pydocstring'
+" Plug 'davidhalter/jedi-vim'
+" Plug 'zaluska/deoplete-rtags'
+" Plug 'poppyschmo/deoplete-latex'
 Plug 'sedm0784/vim-you-autocorrect'
 Plug 'reedes/vim-pencil' "Pencil , SoftPencil
+
+"elixir
+" Plug 'slashmili/alchemist.vim'
+
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+
 " Plug 'tmsvg/pear-tree'
 " Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 " Plug 'kristijanhusak/deoplete-phpactor'
 " Plug 'lvht/phpcd.vim', { 'for': 'php', 'do': 'composer install' }
-Plug 'StanAngeloff/php.vim'
+" Plug 'StanAngeloff/php.vim'
 
 " Include Phpactor
-Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
+" Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
 
 " Require ncm2 and this plugin
 " Plug 'ncm2/ncm2'
 " Plug 'roxma/nvim-yarp'
 " Plug 'phpactor/ncm2-phpactor'
-Plug 'kristijanhusak/deoplete-phpactor'
+" Plug 'kristijanhusak/deoplete-phpactor'
 " Plug 'autozimu/LanguageClient-neovim', {
 "     \ 'branch': 'next',
 "     \ 'do': 'bash install.sh',
@@ -605,10 +703,13 @@ let g:ale_linters = {
       \   'java': ['javac'],
       \   'javascript': ['eslint', 'jshint', 'flow', 'tsserver'],
       \   'python': ['yapf', 'isort', 'flake8', 'pylint'],
-      \   'elm': ['make'],
-      \   'elixir' : ['credo', 'mix'],
+      \   'elm': ['make', 'elm_ls'],
+      \   'elixir': ['mix']
       \}
 
+let g:ale_elixir_credo_strict=1
+"\   'elixir' : ['credo', 'mix', 'elixir-ls'],
+let g:ale_elixir_elixir_ls_release = '~/.elixir/elixir-ls/release'
 let g:ale_python_flake8_executable = 'python'   " or 'python' for Python 2
 let g:ale_python_flake8_options = '-m flake8'
 
@@ -646,7 +747,7 @@ let g:ale_fix_on_save = 1
 
 "open files fzf
 "change dir with fzf
-nnoremap <leader>gd :Cd $HOME/studia<CR>
+nnoremap <leader>gd :call GetGitRoot()<cr>
 imap <c-x><c-l> <plug>(fzf-complete-line)
 map <C-p> :Files<cr>
 "grep fzf
@@ -812,8 +913,8 @@ augroup END
 " }}}
 "
 "phpcd {{{
-let g:deoplete#sources = {}
-let g:deoplete#sources.php = ['omni', 'phpactor', 'ultisnips', 'buffer']
+" let g:deoplete#sources = {}
+" let g:deoplete#sources.php = ['omni', 'phpactor', 'ultisnips', 'buffer']
 "
 " let g:deoplete#ignore_sources = get(g:, 'deoplete#ignore_sources', {})
 " let g:deoplete#ignore_sources.php = ['omni']
@@ -881,12 +982,12 @@ inoremap <buffer><silent> ) <C-R>=AutoPairsInsert(')')<CR>
 " vim-lion {{{
 let b:lion_squeeze_spaces = 1
 " }}}
-"UltiSnips {{{
-let g:UltiSnipsExpandTrigger='<tab>'
-let g:UltiSnipsJumpForwardTrigger='<tab>'
-let g:UltiSnipsJumpBackwardTrigger='<c-z>'
-let g:UltiSnipsEditSplit='vertical'
-"}}}
+""UltiSnips {{{
+"let g:UltiSnipsExpandTrigger='<tab>'
+"let g:UltiSnipsJumpForwardTrigger='<tab>'
+"let g:UltiSnipsJumpBackwardTrigger='<c-z>'
+"let g:UltiSnipsEditSplit='vertical'
+""}}}
 "arwrap {{{
 "toggle wrap arguments in function
 nnoremap <silent> <leader>ew :ArgWrap<CR>
@@ -1015,10 +1116,10 @@ augroup END
 "anzu , nN search {{{
 " ========================================================================================
 " set middle of screen for new searches
-nmap n :<Plug>(anzu-n-with-echo)zz
-nmap N :<Plug>(anzu-N-with-echo)zz
+" nmap n :<Plug>(anzu-n-with-echo)zz
+" nmap N :<Plug>(anzu-N-with-echo)zz
 " statusline
-set statusline+=%{anzu#search_status()}
+" set statusline+=%{anzu#search_status()}
 " }}}
 "netrw {{{
 let g:netrw_sort_by='time'
@@ -1319,10 +1420,25 @@ function! DocumentSourceCode()
     execute l:current_line
   endfunction
 
+
   call s:InsertPythonData()
   call s:DocumentFunctionsClasses()
 endfunction
 
+function! GetGitRoot()
+  let l:gitErr = system("git rev-parse --show-toplevel | grep fatal")
+  let l:deletedEOF=substitute(l:gitErr, '\n$', '', '')
+
+  if empty(l:deletedEOF)
+    let l:gitRoot=system("git rev-parse --show-toplevel")
+    execute ":Cd " . l:gitRoot
+  else
+    let g:pathPwd=system("pwd")
+    g:pathPwd=substitute(g:pathPwd, '\n$', '', '')
+    execute ":Cd " . g:pathPwd
+  endif
+
+endfunction
 
 autocmd Filetype python nnoremap <silent><Leader>d :Pydocstring<CR>
 autocmd Filetype python nnoremap <silent><Leader>D :call DocumentSourceCode()<CR>

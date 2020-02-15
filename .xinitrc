@@ -81,5 +81,6 @@ xidlehook \
 eval "$(ssh-agent -s)"
 #spotify &
 pgrep redshift &> /dev/null || redshift &> /dev/null &
+/usr/bin/syncthing -no-browser -no-restart -logflags=0&
 exec i3
 
