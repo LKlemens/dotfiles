@@ -1,5 +1,14 @@
 #!/usr/bin/bash
 
+
+declare -A config=(
+  [path_to_git_dir]=""
+  [configs_path]=""
+  [list_of_configs]=""
+  [home_list_of_configs]=""
+)
+
+
 function help()
 {
 	cat <<-EOF
@@ -13,7 +22,9 @@ function read_config()
   while read -r line; do
     if [[ $line =~ '=' ]]; then
       varname="${line%%=*}"
+      varname="${varname//\ /}"
       value="${line#*=}"
+      value=${value#\ }
       config[$varname]="$value"
     fi
   done < "$HOME/.config/alink/config"
@@ -21,12 +32,6 @@ function read_config()
 
 function setup()
 {
-  declare -gA config=(
-    [path_to_git_dir]=""
-    [configs_path]=""
-    [list_of_configs]=""
-    [home_list_of_configs]=""
-  )
 
   mkdir -p "$HOME/.config/alink"
 
@@ -48,49 +53,45 @@ function setup()
   fi
 }
 
-setup
 
-function check_config_corectness()
+
+function create_links ()
 {
-  if [[ -d ${config[path_to_git_dir]} ]]; then
-    echo jest ${config[path_to_git_dir]}
-  else
-    echo kurde ${config[path_to_git_dir]}
+  list_of_configs=$1
+  config_path=$2
+  for config in $list_of_configs;do
+    if ! [[ -h  "$config_path/$config" ]]; then
+      cp -r -L -u "$config_path/$config" "$HOME/.config/backup_alist"
+      rm -rf "${config_path:?}/$config"
+      local new_file_added=$(if_new_file_add_to_git_first "$config" "$config_path")
+      ln -s "${config[path_to_git_dir]}/$config" "$config_path/$config"
+    fi
+  done
+
+  if [ $new_file_added ~='*was added*'  ]; then
+    echo "nothing change in $config_path"
   fi
 }
-check_config_corectness
 
-# changes_flag=0
+function if_new_file_add_to_git_first()
+ {
+   config=$1
+   config_path=$2
+   if  [ -z "$(ls "${config[path_to_git_dir]}/$config" 2>/dev/null)" ]; then
+     mv "$config_path/$config" "${config[path_to_git_dir]}"
+     echo "$config was added"
+   fi
+}
 
-if [[ ! -e ${config[path_to_git_dir]} ]]; then
+
+setup
+
+if ! [[  -d ${config[path_to_git_dir]} ]]; then
   echo "There is no ${config[path_to_git_dir]} set" >&2
   exit 1
 fi
 
 mkdir -p "$HOME/.config/backup_alist"
 
-# function create_links ()
-# {
-#   for file in $1;do
-#     cp -r -L -u "$2/$file" "$HOME/.config/backupX"
-#     if_new_file_add_to_git_first "$file" "$2"
-#     rm -rf "${2:?}/$file"
-#     ln -s "${config["path_to_git_dir"]}/$file" "$2/$file"
-#   done
-
-#   if [ $changes_flag = 0 ]; then
-#     echo "nothing change in $2"
-#   fi
-# }
-
-# function if_new_file_add_to_git_first()
-# {
-#   if  [ -z "$(ls "${config["path_to_git_dir"]}/$1" 2>/dev/null)" ]; then
-#     mv "$2/$1" "${config["path_to_git_dir"]}"
-#     echo "$1 was added"
-#     changes_flag=1
-#   fi
-# }
-
-# create_links "${config["list_of_configs"]}" "${config["configs_path"]}"
-# create_links "${config["home_list_of_configs"]}" "$HOME"
+create_links "${config[list_of_configs]}" "${config[configs_path]}"
+create_links "${config[home_list_of_configs]}" "$HOME"
