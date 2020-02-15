@@ -1,0 +1,15 @@
+*.git
+*.class
+a.out
+.project
+.classpath
+bin
+.gitignore
+.eclipse
+.cache
+chromium
+.fzf
+node_modules
+_build
+deps
+elixir_ls

@@ -47,7 +47,7 @@ function setup()
 				path_to_git_dir      = $HOME/git/dotfiles
 				configs_path         = $HOME/.config
 				list_of_configs      = nvim/init.vim redshift.conf rofi i3 polybar scripts compton zathura dunst
-				home_list_of_configs = .zshrc .xinitrc .gitignore .tmux.conf
+				home_list_of_configs = .zshrc .xinitrc .gitignore .tmux.conf .agignore
 		EOF
     exit 1
   fi
