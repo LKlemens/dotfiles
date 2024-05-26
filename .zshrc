@@ -2,35 +2,50 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/home/klemens/.oh-my-zsh
+export ZSH="/Users/klemenslukaszczyk/.oh-my-zsh"
 export ERL_AFLAGS="-kernel shell_history enabled"
+export LANG="pl_PL.UTF-8"
+export GOPATH=/Users/$USER/go
+export PATH=/Users/klemenslukaszczyk/Documents/:/usr/local/opt/openjdk@11/bin:$PATH:/usr/local/opt/rabbitmq/sbin:$GOPATH/bin:/usr/local/opt/docker-compose/bin/:/usr/local/Cellar/mongodb-community/7.0.2/bin/:$PATH
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+alias livebook="/Users/klemenslukaszczyk/.asdf/installs/elixir/1.15.7-otp-26/.mix/escripts/livebook"
 
-# Set list of themes to load
-# Setting this variable when ZSH_THEME=random
-# cause zsh load theme from this variable instead of
-# looking in ~/.oh-my-zsh/themes/
-# An empty array have no effect
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+alias x86="$env /usr/bin/arch -x86_64 /bin/zsh ---login"
+alias arm="$env /usr/bin/arch -arm64 /bin/zsh ---login"
+
+
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+ZSH_THEME="robbyrussell"
+
+# Set list of themes to pick from when loading at random
+# Setting this variable when ZSH_THEME=random will cause zsh to load
+# a theme from this variable instead of looking in $ZSH/themes/
+# If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
 # DISABLE_AUTO_UPDATE="true"
 
+# Uncomment the following line to automatically update without prompting.
+# DISABLE_UPDATE_PROMPT="true"
+
 # Uncomment the following line to change how often to auto-update (in days).
 # export UPDATE_ZSH_DAYS=13
-export TERM=xterm-256color
-export TASKDDATA=/var/taskd
+
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -42,6 +57,9 @@ export TASKDDATA=/var/taskd
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -51,27 +69,32 @@ export TASKDDATA=/var/taskd
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# You can set one of the optional three formats:
+# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
+# or set a custom format using the strftime function format specifications,
+# see 'man strftime' for details.
 # HIST_STAMPS="mm/dd/yyyy"
 
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Which plugins would you like to load?
+# Standard plugins can be found in $ZSH/plugins/
+# Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=( git zsh-syntax-highlighting auto-ls bgnotify)
 
 source $ZSH/oh-my-zsh.sh
+source ~/.tmux/zjumper.zsh
+alias z="zjumper"
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-export LC_CTYPE=en_US.UTF-8
 
 # You may need to manually set your language environment
-export LANG=en_US.UTF-8
+# export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -83,71 +106,48 @@ export LANG=en_US.UTF-8
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 #
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export ASDF_DIR=/usr/local/Cellar/asdf/0.14.0/libexec/
+. /usr/local/opt/asdf/libexec/asdf.sh
+export LC_ALL=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+
+alias update-nvim-nightly='asdf uninstall neovim nightly && asdf install neovim nightly'
+alias remap="hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x70000002A}]}'"
 
 alias e="nvim"
 alias re="source $HOME/.zshrc"
 alias zrc="nvim $HOME/.zshrc"
-alias vrc="nvim $HOME/.config/nvim/init.vim"
+alias vrc="nvim $HOME/.config/nvim/init.lua"
 alias trc="nvim $HOME/.tmux.conf"
-alias i3r="nvim $HOME/.config/i3/config"
-alias get="sudo pikaur -S"
-alias wifi="sudo wifi-menu"
-alias c="clear"
-alias pcount="sudo pacman -Q | wc -l"
-alias pfind="sudo pacman -Ss"
-alias up="sudo pikaur -Syyu"
 alias se='sudo -E nvim'
-alias prm='sudo pacman -Rsc'
-#ls aliases
-alias ls='ls --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
-alias ll='ls -lh --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
-alias la='ls -lha --group-directories-first --time-style=+"%d.%m.%Y %H:%M" --color=auto -F'
 alias l='ls'
-alias wat="mpv $HOME/db/*"
-alias yt="youtube-viewer -W -C"
-alias rd="rtv --enable-media"
-
-alias tmuxn="tmux new -s"
-alias tmuxa="tmux attach -t"
-alias scro="scrot -e 'mv $f ~/screens'"
-alias jk="history 10 | tac | gitjk_cmd"
-alias cal="cal -3"
-alias el='e --servername VIM'
-alias gascii="curl -F c=@term.json https://ptpb.pw/"
 alias tep="trans en:pl"
 alias tpe="trans pl:en"
 alias pkra="curl wttr.in/Krakow"
 alias pzak="curl wttr.in/Zakopane"
-
-
-
-export PATH=$PATH:$HOME/.bin:/usr/lib/ruby/gems/2.4.0:$HOME/.config/scripts:$HOME/git/rtags/bin:$HOME/bachelor/gcc-linaro-7.2.1-2017.11-x86_64_arm-linux-gnueabihf/bin:.
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
-export GOPATH=$HOME/git
-
-# junit
-export CLASSPATH=$CLASSPATH:/usr/share/java/junit-4.12.jar:/usr/share/java/hamcrest-core.jar:/usr/share/java/hamcrest-integration.jar:/usr/lib/jvm/java-9-openjdk:$HOME/git/JFoenix/jfoenix/build/libs/jfoenix-0.0.0-SNAPSHOT.jar:.
-
+alias cd..="cd .."
+alias cd...="cd ../.."
+alias cd....="cd ../../.."
+alias fzfb='source ~/.fzf-bookmarks'
+#
 #fzf#AWESOME FZF !!!
-export FZF_DEFAULT_OPTS="-m --bind J:down,K:up,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,page-up:preview-page-up,page-down:preview-page-down --height=80 --preview 'rougify {} ' --history='/home/$USER/.local/share/fzf-history/terminal'   --bind ?:toggle-preview "
+export FZF_DEFAULT_OPTS="-m --bind J:down,K:up,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all,page-up:preview-page-up,page-down:preview-page-down --height=80 --preview 'rougify {} ' --history='/Users/$USER/.local/share/fzf-history/terminal'   --bind ?:toggle-preview "
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .svn -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
-bindkey  -s '^p' 'files=$(fzf) && [[ $files ]] && nvim -p $(echo $files | paste -sd" ")^M'
+bindkey  -s '^p' '~/.tmux/plugins/disable-tmux-navigator.sh && files=$(fzf) && ~/.tmux/plugins/enable-tmux-navigator.sh && [[ $files ]] && nvim $(echo $files | tr "\n" " ") ^M'
+bindkey  -s '^o' 'files=$(z list) && [[ $files ]] && file=$(echo $files | fzf) && cd $file ^M'
 FZF_MARKS_COMMAND="fzf --height 40% --reverse"
-
-
-
-
 
 bindkey '^ ' autosuggest-accept
 
@@ -169,48 +169,14 @@ FZF-EOF"
 
 }
 
-pbin() {
-"$@" | curl -F c=@- https://0x0.st
-}
-
-
-
-PATH="/home/klemens/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/klemens/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/klemens/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/klemens/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/klemens/perl5"; export PERL_MM_OPT;
-
-source ~/.zsh/auto-ls.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $HOME/.config/scripts/fzfMarks.fzf
-source $HOME/.config/aliasTip/alias-tips.plugin.zsh
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-function st() {
-  id=$(task list | awk -v name="$1" 'match($0, name) {print $1}');
-  if [[ -n $id ]]; then
-    task start $id;
-    echo "$id $name";
-  else
-    echo "failed";
-  fi
-}
-
-#function tc() { out=$(trans en:pl $1); h=$(echo $out | head -n 3); t=$(echo $out | tail -n 1); echo $h | xclip -sel clip; echo $t | xclip -sel primary; xclip -o }
-
 function tc () {
+        pathh="/Users/klemenslukaszczyk"
         eng_word="$1"
-        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "/home/klemens/${eng_word}.mp3")
+        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "$pathh/${eng_word}.mp3")
         if [[ -z $2 ]]; then
-          pathfile="/home/klemens/Documents/eng/mine.txt"
+          pathfile="$pathh/Documents/eng/mine.txt"
         else
-          pathfile="/home/klemens/Documents/eng/book.txt"
+          pathfile="$pathh/Documents/eng/$2.txt"
         fi
 
         header=($(echo "$out" | head -n 3))
@@ -222,100 +188,61 @@ function tc () {
         echo "${header[2]}"
         transaltion=$(echo $transaltion | sed "s/\b$eng_word\b//I")
         echo "$transaltion"
+        if [[ -n $3 ]]; then
+          read  "?Do you want change translation ?[y/n]:?"
+          if [[ $REPLY == 'y' ]];then
+            transaltion=$3
+            echo "translation changed"
+            echo $transaltion
+          fi
+        fi
         if grep -w -o -q "$eng_word" $pathfile; then
           echo "That word is stored already"
-          rm /home/klemens/${eng_word}.mp3
+          rm $pathh/${eng_word}.mp3
           return 0
         fi
         read  "?Do you want create flashcard?[y/n]:?"
         if [[ $REPLY == 'y' ]];then
-          sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> $pathfile
-          sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" /home/klemens/Documents/eng/template.txt >> $pathfile
-          mv /home/klemens/${eng_word}.mp3  /home/klemens/.local/share/Anki2/User\ 1/collection.media/
+          sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" $pathh/Documents/eng/template.txt >> $pathfile
+          sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" $pathh/Documents/eng/template.txt >> $pathfile
+          mv $pathh/${eng_word}.mp3  $pathh/Library/Application\ Support/Anki2/User\ 1/collection.media/
         else
-          rm /home/klemens/${eng_word}.mp3
+          rm $pathh/${eng_word}.mp3
         fi;
 
+
+}
+alias tep="trans en:pl"
+alias tpe="trans pl:en"
+
+function tcw() {
+  tc "$1" "504" $2
 }
 
-function btc(){
-  tc $1 1
+function tcp() {
+  tc "$1" "podcast" $2
 }
 
-function category()
-{
-  cd "$HOME"/Documents/category || exit
-  link=$(head -1 links)
-  echo $link
-  youtube-dl $link
-  sed -i '1d' links
-  cd -
+function tcd() {
+  tc "$1" "daily" $2
 }
 
-function podcasts()
-{
-  cd "$HOME"/Documents/podcasts || exit
-  for i in {1..10}; do
-    link=$(head -1 links)
-    sed -i '1d' links
-    echo "$(wget -O - "$link" | grep "\.mp3" | sed -e 's/.*\(http.*\.mp3\).*/\1/'| head -1)"
-  done | xargs -I{} -P10 sh -c "wget {}"
-  cd -
+function tcb() {
+  tc "$1" "books" $2
 }
 
-function sd() { sdcv "$1" | less }
-rawurlencode() {
-  local string="${1}"
-  local strlen=${#string}
-  local encoded=""
-  local pos c o
-
-  for (( pos=0 ; pos<strlen ; pos++ )); do
-     c=${string:$pos:1}
-     case "$c" in
-        [-_.~a-zA-Z0-9] ) o="${c}" ;;
-        * )               printf -v o '%%%02x' "'$c"
-     esac
-     encoded+="${o}"
-  done
-  echo "${encoded}"    # You can either set a return variable (FASTER)
-  REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
-}
-function pv() { echo $1 | xclip -sel clip; url="https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode "$1")"; echo $url; lynx -dump https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode "$1") | grep -m 1 -A 10 "phrasal verb$" | sed -r -e 's/\[[0-9]+\]//g' -e 's/\///g' -e '/Czasowniki/d' | awk '{ if ( NF > 1) { print $0  } else { exit }; }' | xclip -sel primary; xclip -o }
-
-function onlyp() { lynx -dump https://www.diki.pl/slownik-angielskiego\?q\=$(rawurlencode $1) | grep "[0-9]\." | grep -v http | sed -e 's/\///g' -e 's/[0-9]\.*//g' -e 's/\[\]//g' -e 's/(.*//g'| paste -sd',' | sed -r -e 's/\s{2}+//g' | cut -d',' -f 1-6  }
-
-function ts() { timew summary "b\"$1\"" }
-
-
-
-
-
-function elmo(){
-  js="elm.js"
-  min="elm.min.js"
-
-  elm make --optimize --output=$js $@
-
-  uglifyjs $js --compress "pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe" | uglifyjs --mangle --output=$min
-
-  echo "Initial size: $(cat $js | wc -c) bytes  ($js)"
-  echo "Minified size:$(cat $min | wc -c) bytes  ($min)"
-  echo "Gzipped size: $(cat $min | gzip -c | wc -c) bytes"
+function tcb2() {
+  tc "$1" "books2" $2
 }
 
-db() {
-  mpath='/home/klemens/watch'
-  movies=($mpath/*.ts)
-  echo "playing ${movies[1]}"
-  xdotool key Super+3
-  sleep 0.2
-  mpv --fullscreen --start=00:03:20 "${movies[1]}"
-  mv "${movies[1]}" "$mpath/trash"
-  mv "${movies[1]%.*}.srt"  "$mpath/trash"
-  if [[ (( ${#movies} < 6 )) ]]; then
-    notify-send "$((${#movies} - 1)) movies left !!!"
-  fi
-  xdotool key Super+1
-}
-source ~/git/elm-sh-completion/elm-completion.sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
+eval "$(direnv hook zsh)"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+export PATH=/Users/klemenslukaszczyk/.meteor:$PATH
