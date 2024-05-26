@@ -86,7 +86,7 @@ ZSH_THEME="robbyrussell"
 plugins=( git zsh-syntax-highlighting auto-ls bgnotify)
 
 source $ZSH/oh-my-zsh.sh
-source ~/.tmux/zjumper.zsh
+source ~/.zjumper.zsh
 alias z="zjumper"
 
 # User configuration
@@ -145,7 +145,7 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .svn -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
-bindkey  -s '^p' '~/.tmux/plugins/disable-tmux-navigator.sh && files=$(fzf) && ~/.tmux/plugins/enable-tmux-navigator.sh && [[ $files ]] && nvim $(echo $files | tr "\n" " ") ^M'
+bindkey  -s '^p' '~/.tmux/plugins/disable-tmux-navigator.sh && files=$(fzf) && [[ $files ]] && nvim $(echo $files | tr "\n" " "); ~/.tmux/plugins/enable-tmux-navigator.sh  ^M'
 bindkey  -s '^o' 'files=$(z list) && [[ $files ]] && file=$(echo $files | fzf) && cd $file ^M'
 FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
@@ -168,7 +168,6 @@ FZF-EOF" \
 FZF-EOF"
 
 }
-
 function tc () {
         pathh="/Users/klemenslukaszczyk"
         eng_word="$1"
