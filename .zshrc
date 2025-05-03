@@ -6,9 +6,9 @@ export ZSH="/Users/klemenslukaszczyk/.oh-my-zsh"
 export ERL_AFLAGS="-kernel shell_history enabled"
 export LANG="pl_PL.UTF-8"
 export GOPATH=/Users/$USER/go
-export PATH=/Users/klemenslukaszczyk/Documents/:/usr/local/opt/openjdk@11/bin:$PATH:/usr/local/opt/rabbitmq/sbin:$GOPATH/bin:/usr/local/opt/docker-compose/bin/:/usr/local/Cellar/mongodb-community/7.0.2/bin/:$PATH
+export PATH=/Users/klemenslukaszczyk/Documents/:/usr/local/opt/openjdk@11/bin:$PATH:/usr/local/opt/rabbitmq/sbin:$GOPATH/bin:/usr/local/opt/docker-compose/bin/:/usr/local/Cellar/mongodb-community/7.0.2/bin/:/usr/local/texlive/2024basic/bin/universal-darwin:$PATH
 
-alias livebook="/Users/klemenslukaszczyk/.asdf/installs/elixir/1.15.7-otp-26/.mix/escripts/livebook"
+# alias livebook="/Users/klemenslukaszczyk/.asdf/installs/elixir/1.15.7-otp-26/.mix/escripts/livebook"
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
@@ -146,13 +146,14 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_OPTS=" --bind ctrl-h:preview-up,ctrl-l:preview-down,ctrl-a:select-all,ctrl-d:deselect-all,ctrl-t:toggle-all  --preview 'tree -C {} | head -200'"
 export FZF_ALT_C_COMMAND='ag -g "" -l | sed -e "s:/[^/]*$::" | uniq '
 bindkey  -s '^p' '~/.tmux/plugins/disable-tmux-navigator.sh && files=$(fzf) && [[ $files ]] && nvim $(echo $files | tr "\n" " "); ~/.tmux/plugins/enable-tmux-navigator.sh  ^M'
-bindkey  -s '^o' 'files=$(z list) && [[ $files ]] && file=$(echo $files | fzf) && cd $file ^M'
+bindkey  -s '^o' '~/.tmux/plugins/disable-tmux-navigator.sh && files=$(z list) && [[ $files ]] && file=$(echo $files | fzf) && cd $file; ~/.tmux/plugins/enable-tmux-navigator.sh   ^M'
 FZF_MARKS_COMMAND="fzf --height 40% --reverse"
 
 bindkey '^ ' autosuggest-accept
 
 # fshow - git commit browser
 fshow() {
+  ~/.tmux/plugins/disable-tmux-navigator.sh 
   git log --graph --color=always \
       --format="%C(auto)%h%d %s %C(black)%C(bold)%cr" "$@" |
   fzf --ansi --no-sort --reverse --tiebreak=index --bind=ctrl-s:toggle-sort \
@@ -167,11 +168,13 @@ FZF-EOF" \
                 {}
 FZF-EOF"
 
+    ~/.tmux/plugins/enable-tmux-navigator.sh 
+
 }
 function tc () {
         pathh="/Users/klemenslukaszczyk"
         eng_word="$1"
-        out=$(trans en:pl "${eng_word}" -speak -download-audio-as "$pathh/${eng_word}.mp3")
+        out=$(trans en:pl "${eng_word}" -download-audio-as "$pathh/${eng_word}.mp3")
         if [[ -z $2 ]]; then
           pathfile="$pathh/Documents/eng/mine.txt"
         else
@@ -188,26 +191,27 @@ function tc () {
         transaltion=$(echo $transaltion | sed "s/\b$eng_word\b//I")
         echo "$transaltion"
         if [[ -n $3 ]]; then
-          read  "?Do you want change translation ?[y/n]:?"
-          if [[ $REPLY == 'y' ]];then
-            transaltion=$3
-            echo "translation changed"
-            echo $transaltion
-          fi
+          # read  "?Do you want change translation ?[y/n]:?"
+          transaltion=$3
+          # if [[ $REPLY == 'y' ]];then
+          #   transaltion=$3
+          #   echo "translation changed"
+          #   echo $transaltion
+          # fi
         fi
         if grep -w -o -q "$eng_word" $pathfile; then
           echo "That word is stored already"
           rm $pathh/${eng_word}.mp3
           return 0
         fi
-        read  "?Do you want create flashcard?[y/n]:?"
-        if [[ $REPLY == 'y' ]];then
+        # read  "?Do you want create flashcard?[y/n]:?"
+        # if [[ $REPLY == 'y' ]];then
           sed  -e "s#frontpage#${eng_word}<br />${header[2]}#" -e "s#backpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" $pathh/Documents/eng/template.txt >> $pathfile
           sed  -e "s#backpage#${eng_word}<br />${header[2]}#" -e "s#frontpage#$transaltion#" -e "s#sound_mp3#${eng_word}#" $pathh/Documents/eng/template.txt >> $pathfile
           mv $pathh/${eng_word}.mp3  $pathh/Library/Application\ Support/Anki2/User\ 1/collection.media/
-        else
-          rm $pathh/${eng_word}.mp3
-        fi;
+        # else
+        #   rm $pathh/${eng_word}.mp3
+        # fi;
 
 
 }
@@ -219,7 +223,7 @@ function tcw() {
 }
 
 function tcp() {
-  tc "$1" "podcast" $2
+  tc "$1" "podcast2" $2
 }
 
 function tcd() {
