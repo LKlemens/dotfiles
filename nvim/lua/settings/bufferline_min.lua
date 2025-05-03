@@ -1,12 +1,16 @@
+local g = vim.g -- a table to access global variables
+local map = vim.api.nvim_set_keymap
+local options = { noremap = true }
+local opt = vim.opt -- to set options
+opt.sessionoptions = "globals,buffers"
+g.mapleader = ","
 map("n", "[w", "<cmd>:BufferLineMovePrev<cr>", options)
 map("n", "]w", "<cmd>:BufferLineMoveNext<cr>", options)
-map("n", "<M-k>", "<cmd>BufferLineCycleNext<cr>", { silent = true })
-map("n", "<M-j>", "<cmd>BufferLineCyclePrev<cr>", { silent = true })
+map("n", "<C-M-k>", "<cmd>BufferLineCycleNext<cr>", { silent = true })
+map("n", "<C-M-j>", "<cmd>BufferLineCyclePrev<cr>", { silent = true })
 map("n", "<leader>bp", "<cmd>BufferLineTogglePin<CR>", options)
 map("n", "<leader>bgt", "<cmd>BufferLineGroupToggle Tests<CR>", options)
 map("n", "<leader>bc", "<cmd>BufferLineCloseOthers<CR>", options)
-map("n", "<leader>1", "<cmd>lua require('bufferline').go_to(1, true)<CR>", options)
-map("n", "<leader>br", "<cmd>BufferLineCloseRight<CR>", options)
 
 local groups = require("bufferline.groups")
 

@@ -9,6 +9,7 @@ map("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", map_opts)
 map("n", "gD", "<cmd>lua vim.lsp.buf.implementation()<cr>", map_opts)
 map("n", "1gD", "<cmd>lua vim.lsp.buf.type_definition()<cr>", map_opts)
 map("n", "<leader>va", "<cmd>lua vim.lsp.buf.code_action()<cr>", map_opts)
+map("n", "<leader>qf", "<cmd>lua require('trouble').toggle('workspace_diagnostics')<cr>", map_opts)
 
 -- Key mapping for going to the next diagnostic
 vim.api.nvim_set_keymap(
@@ -27,11 +28,11 @@ vim.api.nvim_set_keymap(
 
 -- The nvim-cmp almost supports LSP's capabilities so You should advertise it to LSP servers..
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-local path_to_elixirls = vim.fn.expand("~/.elixir-ls/0.21.3/language_server.sh")
+local path_to_elixirls = vim.fn.expand("~/.elixir-ls/0.24.1/language_server.sh")
 
 local lspconfig = require("lspconfig")
 
-lspconfig.tsserver.setup({})
+lspconfig.ts_ls.setup({})
 lspconfig.lua_ls.setup({})
 lspconfig.rust_analyzer.setup({})
 lspconfig.elixirls.setup({

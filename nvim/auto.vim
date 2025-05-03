@@ -1,0 +1,1 @@
+au FocusGained,BufEnter * :checktime

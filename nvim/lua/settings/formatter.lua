@@ -28,6 +28,7 @@ vim.g.formatter = true
 
 formatter.setup({
 	logging = true,
+	tempfile_dir = "/tmp",
 	filetype = {
 		javascript = { prettier },
 		json = { prettier },
@@ -46,12 +47,20 @@ formatter.setup({
 				if not vim.g.formatter then
 					return {}
 				else
-					return {
-						exe = "mix format",
-						args = { vim.api.nvim_buf_get_name(0) },
-						stdin = false,
+					vim.cmd("silent !mix format %")
+					return {}
+					--[[ return {
+						exe = "mix",
+						args = {
+							"format",
+							"-",
+							-- vim.api.nvim_buf_get_name(0),
+							-- util.escape_path(util.get_current_buffer_file_path()),
+						},
+						stdin = true,
 						ignore_exitcode = false,
-					}
+						tempfile_dir = "/tmp",
+					} ]]
 				end
 			end,
 		},
@@ -64,13 +73,9 @@ formatter.setup({
 })
 
 local format_augroup = vim.api.nvim_create_augroup("format-custom", { clear = true })
-local function refresh()
-	vim.cmd("e!")
-end
 vim.api.nvim_create_autocmd({ "BufWritePost" }, {
 	group = format_augroup,
 	callback = function()
-		vim.cmd("Format")
-		vim.defer_fn(refresh, 1000)
+		vim.cmd("FormatWrite")
 	end,
 })

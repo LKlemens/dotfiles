@@ -26,7 +26,7 @@ local plugins = {
 		"williamboman/mason-lspconfig.nvim",
 		config = function()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "lua_ls", "rust_analyzer", "elixirls", "tsserver" },
+				ensure_installed = { "lua_ls", "rust_analyzer", "elixirls", "ts_ls" },
 			})
 		end,
 	},
@@ -40,6 +40,12 @@ local plugins = {
 			require("copilot").setup({
 				suggestion = { enabled = false },
 				panel = { enabled = false },
+				filetypes = {
+					javascript = true, -- allow specific filetype
+					typescript = true, -- allow specific filetype
+					elixir = true, -- allow specific filetype
+					["*"] = false,
+				},
 			})
 		end,
 	},
@@ -54,7 +60,9 @@ local plugins = {
 	{
 		"zbirenbaum/copilot-cmp",
 		config = function()
-			require("copilot_cmp").setup()
+			require("copilot_cmp").setup({
+				fix_pairs = true,
+			})
 		end,
 	},
 
@@ -109,6 +117,7 @@ local plugins = {
 		config = function()
 			require("neoscroll").setup({})
 		end,
+		commit = "e78657719485c5663b88e5d96ffcfb6a2fe3eec0",
 	},
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 	"tpope/vim-endwise", -- add #endif etc at the end
@@ -184,6 +193,33 @@ local plugins = {
 				autosave_only_in_session = true,
 				autoload_mode = config.AutoloadMode.CurrentDir,
 			})
+		end,
+	},
+	"RRethy/vim-illuminate",
+	"folke/trouble.nvim",
+	"gbprod/yanky.nvim",
+	"tpope/vim-fugitive",
+	{
+		"AckslD/nvim-neoclip.lua",
+		dependencies = {
+			{ "kkharji/sqlite.lua", module = "sqlite" },
+			-- you'll need at least one of these
+			-- {'nvim-telescope/telescope.nvim'},
+			-- {'ibhagwan/fzf-lua'},
+		},
+		config = function()
+			require("neoclip").setup()
+		end,
+	},
+	{
+		"aaronhallaert/advanced-git-search.nvim",
+		cmd = { "AdvancedGitSearch" },
+	},
+	{
+
+		"stevearc/qf_helper.nvim",
+		config = function()
+			require("qf_helper").setup()
 		end,
 	},
 }

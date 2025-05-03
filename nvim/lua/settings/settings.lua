@@ -33,7 +33,7 @@ opt.background = "dark"
 opt.cursorline = true
 opt.scrolloff = 8
 opt.termguicolors = true
-opt.sessionoptions="globals,buffers"
+opt.sessionoptions = "globals,buffers"
 
 -- mappings
 options = { noremap = true }
@@ -75,6 +75,11 @@ map("n", "<leader>cd", "<cmd>:cd %:p:h<cr><cmd>:pwd<cr>", options)
 
 -- maximazer
 map("n", "<leader>ma", "<cmd>:MaximizerToggle<CR>", options)
+map("n", "<leader>re", "<cmd>:WinResizerStartResize<CR>", options)
+
+map("i", "<c-h>", "<Space><-<Space>", options)
+map("i", "<c-j>", "<Space>-><Space>", options)
+map("i", "<c-k>", "|><Space>", options)
 
 vim.cmd([[
 nnoremap <leader>gd :call GetGitRoot()<cr>
@@ -107,3 +112,6 @@ function! CopyPath()
   let @+=expand('%:p')
 endfunction
 ]])
+
+-- diagnostic
+vim.diagnostic.config({ virtual_lines = false })

@@ -18,13 +18,11 @@ lint.linters_by_ft = {
 
 local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
-local function try_lint()
-	lint.try_lint()
-end
+local function try_lint() end
 
 vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
 	group = lint_augroup,
 	callback = function()
-		vim.defer_fn(try_lint, 3000)
+		lint.try_lint()
 	end,
 })

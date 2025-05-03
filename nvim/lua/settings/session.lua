@@ -12,7 +12,11 @@ local function count_buffers()
 	local count = 0
 	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
 		if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buflisted then
-			count = count + 1
+			local buf_name = vim.api.nvim_buf_get_name(buf)
+			-- Check if the buffer name contains "rst"
+			if not string.match(buf_name, "rst") then
+				count = count + 1
+			end
 		end
 	end
 	return count
@@ -30,7 +34,7 @@ vim.api.nvim_create_autocmd({ "VimEnter" }, {
 vim.api.nvim_create_autocmd("VimLeavePre", {
 	group = session_manager_group,
 	callback = function()
-		if count_buffers() > 4 then
+		if count_buffers() > 3 then
 			session_manager.save_current_session()
 		end
 	end,
@@ -48,7 +52,7 @@ timer:start(
 	0,
 	900000,
 	vim.schedule_wrap(function()
-		if count_buffers() > 4 then
+		if count_buffers() > 2 then
 			session_manager.save_current_session()
 		end
 	end)
